@@ -1,0 +1,13 @@
+*.cpp                         text diff=cpp
+*.hpp                         text diff=cpp
+*.ipp                         text diff=cpp
+*.mm                          text diff=cpp
+*.md                          text
+*.txt                         text
+.clang-format                 text
+.gitignore                    text
+.gitattributes                text
+LICENSE                       text
+README                        text
+CMakeLists.txt                text
+src/include/fspp/filesystem   text diff=cpp

@@ -61,7 +61,11 @@ namespace {
 utility::Scope
 make_handle_scope(HANDLE handle)
 {
-  return utility::make_scope([handle]() { ::CloseHandle(handle); });
+  return utility::make_scope([handle]() {
+    if (handle != INVALID_HANDLE_VALUE) {
+      ::CloseHandle(handle);
+    }
+  });
 }
 
 
@@ -100,7 +104,7 @@ read_reparse_point_data(char* buffer, size_t bufsize, const path& p, std::error_
   if (!::DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT,
                          nullptr,  // in buffer
                          0,        // in buffer size
-                         buffer, bufsize, &retlen,
+                         buffer, static_cast<DWORD>(bufsize), &retlen,
                          nullptr)) {  // overlapped structure
     ec = std::error_code(::GetLastError(), std::system_category());
     return false;
@@ -362,7 +366,7 @@ create_hard_link(const path& target_p, const path& link_p, std::error_code& ec) 
 void
 create_symlink(const path& target_p, const path& link_p, std::error_code& ec) NOEXCEPT
 {
-  if (!::CreateSymbolicLinkW(target_p.c_str(), link_p.c_str(), 0x0)) {
+  if (!::CreateSymbolicLinkW(link_p.c_str(), target_p.c_str(), 0x0)) {
     ec = std::error_code(::GetLastError(), std::system_category());
   }
   else {
@@ -377,7 +381,7 @@ create_directory_symlink(const path& target_p,
                          std::error_code& ec) NOEXCEPT
 {
   if (!::CreateSymbolicLinkW(
-        target_p.c_str(), link_p.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY)) {
+        link_p.c_str(), target_p.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY)) {
     ec = std::error_code(::GetLastError(), std::system_category());
   }
   else {

@@ -65,7 +65,7 @@ public:
    *
    * @throws As specified in Error reporting (7). */
   file_size_type file_size() const;
-  file_size_type file_size(std::error_code& ec) const noexcept;
+  file_size_type file_size(std::error_code& ec) const NOEXCEPT;
 
   /*! Assigns new content to the directory entry object. Sets the path to p. */
   void assign(const filesystem::path& p);

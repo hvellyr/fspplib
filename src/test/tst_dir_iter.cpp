@@ -330,11 +330,11 @@ TEST_CASE("recursive dir iter - pop", "[dir-iter][recursive]")
 
     auto iter = recursive_directory_iterator(root);
     while (iter != end(iter)) {
-      depths.emplace_back(iter->path().lexically_relative(root), iter.depth());
-      if (iter->path().filename() == "es.txt") {
+      if (iter->path().parent_path().filename() == "foo") {
         iter.pop();
       }
       else {
+        depths.emplace_back(iter->path().lexically_relative(root), iter.depth());
         ++iter;
       }
     }
@@ -343,7 +343,6 @@ TEST_CASE("recursive dir iter - pop", "[dir-iter][recursive]")
                                      {"abc", 0},
                                      {"abc/en.txt", 1},
                                      {"abc/foo", 1},
-                                     {"abc/foo/es.txt", 2},
                                      {"abc/xaxa", 1},
                                      {"german.txt", 0},
                                      {"kor.txt", 0},

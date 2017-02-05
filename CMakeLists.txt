@@ -101,6 +101,16 @@ CHECK_CXX_SOURCE_COMPILES("
   }
 " FSPP_HAVE_STD_MAKE_UNIQUE)
 
+CHECK_CXX_SOURCE_COMPILES("
+  #include <type_traits>
+  template<typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
+  void foo() { }
+  int main() {
+    foo<int>();
+    return 0;
+  }
+" FSPP_HAVE_STD_ENABLE_IF_T)
+
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/src/include/fspp/details/config.hpp.in
                ${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp)
 

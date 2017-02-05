@@ -10,8 +10,16 @@
 namespace eyestep {
 namespace estd {
 
+#if !defined(FSPP_HAVE_STD_ENABLE_IF_T)
+
 template <bool Predicate, typename T = void>
 using enable_if_t = typename std::enable_if<Predicate, T>::type;
+
+#else
+
+using std::enable_if_t;
+
+#endif
 
 }  // namespace estd
 }  // namespace eyestep

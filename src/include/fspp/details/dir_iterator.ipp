@@ -86,7 +86,7 @@ directory_entry::file_size() const
 
 
 inline file_size_type
-directory_entry::file_size(std::error_code& ec) const noexcept
+directory_entry::file_size(std::error_code& ec) const NOEXCEPT
 {
   return _file_size ? _file_size.value() : filesystem::file_size(path(), ec);
 }

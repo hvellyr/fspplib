@@ -33,3 +33,7 @@
 #if defined(FSPP_HAVE_STD_CODECVT)
 #define FSPP_SUPPORT_WSTRING_API 1
 #endif
+
+// Enable to compile the special windows path and test code if developing on
+// non-window systems.  Only the tests tagged with "[path]" will work.
+//#define FSPP_EMULATE_WIN_PATH  1

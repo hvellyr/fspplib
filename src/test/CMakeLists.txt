@@ -2,6 +2,11 @@
 
 add_executable(fspplib_tests
   main.cpp
+  test_utils.hpp
+  tst_dir_iter.cpp
+  tst_operations.cpp
+  tst_path.cpp
+  tst_types.cpp
 )
 
 target_include_directories(fspplib_tests PUBLIC

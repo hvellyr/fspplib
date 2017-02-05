@@ -1,0 +1,60 @@
+                                         |Mem  |Mac  |Win  |Unix |
+------------------------------------------------------------------
+    function absolute                    |     |     |     |     |
+    function system_complete             |     |     |     |     |
+    function canonical                   |     |     |     |     |
+    function weakly_canonical            |     |     |     |     |
+    function relative                    |     |     |     |     |
+    function proximate                   |     |     |     |     |
+    function copy                        |i    |i    |i    |i    |
+    function copy_file                   |i    |i    |i    |i    |
+    function copy_symlink                |i    |i    |i    |i    |
+    function create_directory            |i    |i    |i    |i    |
+    function create_directories          |i    |i    |i    |i    |
+    function create_hard_link            |-    |i    |i    |i    |
+    function create_symlink              |-    |i    |i    |i    |
+    function create_directory_symlink    |-    |i    |i    |i    |
+    function current_path                |-    |i    |i    |i    |
+    function exists                      |i    |i    |i    |i    |
+    function equivalent                  |i    |i    |i    |i    |
+    function file_size                   |i    |i    |i    |i    |
+    function hard_link_count             |-    |i    |i    |i    |
+    function last_write_time             |i    |i    |i    |i    |
+    function permissions                 |-    |i    |i    |i    |
+    function read_symlink                |-    |i    |i    |i    |
+    function remove                      |i    |i    |i    |i    |
+    function remove_all                  |i    |i    |i    |i    |
+    function rename                      |i    |i    |i    |i    |
+    function resize_file                 |i    |i    |i    |i    |
+    function space                       |-    |i    |i    |i    |
+    function status                      |i    |i    |i    |i    |
+    function symlink_status              |-    |i    |i    |i    |
+    function temp_directory_path         |-    |i    |i    |i    |
+
+    function is_block_file               i
+    function is_character_file           i
+    function is_directory                i
+    function is_empty                    i
+    function is_fifo                     i
+    function is_other                    i
+    function is_regular_file             i
+    function is_socket                   i
+    function is_symlink                  i
+    function status_known                i
+
+
+- implement missing operations (absolute, system_complete, canonical, ...)
+
+- check test coverage for operations
+
+- check test coverage for path methods
+
+- review vfs strategy.  Any number of vfs?  Only one vfs for testing
+  purposes?
+
+- add a copy_if operation taking a predicate to decide whether a
+  file/folder is to be copied
+
+- Can't we cache status() on directory_entry like file_size()?
+
+- support for OS9 vs. Unix path style on mac

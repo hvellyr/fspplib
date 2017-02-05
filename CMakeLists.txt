@@ -92,6 +92,15 @@ CHECK_CXX_SOURCE_COMPILES("
   }
 " FSPP_HAVE_STD_MISMATCH_WITH_PREDICATE)
 
+CHECK_CXX_SOURCE_COMPILES("
+  #include <memory>
+  #include <string>
+  int main() {
+    auto f = std::make_unique<std::string>();
+    return 0;
+  }
+" FSPP_HAVE_STD_MAKE_UNIQUE)
+
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/src/include/fspp/details/config.hpp.in
                ${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp)
 

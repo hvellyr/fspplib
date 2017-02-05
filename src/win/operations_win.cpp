@@ -61,7 +61,11 @@ namespace {
 utility::Scope
 make_handle_scope(HANDLE handle)
 {
-  return utility::make_scope([handle]() { ::CloseHandle(handle); });
+  return utility::make_scope([handle]() {
+    if (handle != INVALID_HANDLE_VALUE) {
+      ::CloseHandle(handle);
+    }
+  });
 }
 
 

@@ -57,27 +57,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 set(CMAKE_MACOSX_RPATH ON)
 
-# Check for some system header files
-# This only works for C headers, sigh.
-# INCLUDE (CheckIncludeFiles)
-# CHECK_INCLUDE_FILES (codecvt HAVE_STD_CODECVT)
-INCLUDE (CheckCXXSourceCompiles)
-set(CMAKE_REQUIRED_FLAGS "${cxx11_options}")
-CHECK_CXX_SOURCE_COMPILES("
-  #include <codecvt>
-  int main() {
-    std::codecvt_utf8_utf16<char16_t> x;
-    return 0;
-  }
-" FSPP_HAVE_STD_CODECVT)
-
-CHECK_CXX_SOURCE_COMPILES("
-  #include <sstream>
-  int main() {
-    auto _stream = std::stringstream(std::ios::in);
-    return 0;
-  }
-" FSPP_HAVE_STD_STRINGSTREAM_COPYASSIGN)
+include(cmake/features.cmake)
 
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/src/include/fspp/details/config.hpp.in
                ${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp)

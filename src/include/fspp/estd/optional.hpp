@@ -4,11 +4,17 @@
 
 #include "fspp/details/config.hpp"
 
+#if defined(FSPP_HAVE_STD_OPTIONAL)
+#include <optional>
+#endif
+
 #include <utility>
 
 
 namespace eyestep {
 namespace estd {
+
+#if !defined(FSPP_HAVE_STD_OPTIONAL)
 
 template <typename T>
 class optional
@@ -63,6 +69,12 @@ private:
   T _value;
   bool _is_set = false;
 };
+
+#else
+
+using std::optional;
+
+#endif
 
 }  // namespace estd
 }  // namespace eyestep

@@ -5,3 +5,7 @@
 /*! Set if the compiler supports the "codecvt" header */
 #cmakedefine FSPP_HAVE_STD_CODECVT 1
 #cmakedefine FSPP_HAVE_STD_STRINGSTREAM_COPYASSIGN 1
+#cmakedefine FSPP_HAVE_STD_MISMATCH_WITH_PREDICATE 1
+#cmakedefine FSPP_HAVE_STD_MAKE_UNIQUE 1
+#cmakedefine FSPP_HAVE_STD_ENABLE_IF_T 1
+#cmakedefine FSPP_HAVE_STD_OPTIONAL 1

@@ -13,8 +13,11 @@ for details.
 Depedencies and supported compilers
 -----------------------------------
 
-Currently known to build with clang-3.7.1 (on Mac); (GCC 4.9.1 on
-Ubuntu 14.04), (Visual Studio 2013 on Win7).
+Currently known to build with
+
+- clang-3.7.1 on Mac
+- GCC 4.9.1 on Ubuntu 14.04
+- Visual Studio 2015 on Win10.
 
 
 Known Issues

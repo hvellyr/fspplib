@@ -97,7 +97,10 @@ with_privilege_check(F f)
   catch (const filesystem_error& fe) {
 #if defined(FSPP_IS_WIN)
     if (fe.code().value() == ERROR_PRIVILEGE_NOT_HELD) {
-      std::cerr << "TEST disabled because missing privileges" << std::endl;
+      std::cerr << "TEST disabled: missing privileges" << std::endl;
+    }
+    else if (fe.code().value() == ERROR_ACCESS_DENIED) {
+      std::cerr << "TEST disabled: access denied" << std::endl;
     }
     else {
       throw;

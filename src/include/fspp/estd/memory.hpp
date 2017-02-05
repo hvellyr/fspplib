@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "fspp/details/config.hpp"
+
 #include "fspp/estd/type_traits.hpp"
 
 #include <memory>

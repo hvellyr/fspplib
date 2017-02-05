@@ -6,6 +6,7 @@ add_executable(fspplib_tests
   tst_dir_iter.cpp
   tst_operations.cpp
   tst_path.cpp
+  tst_performance.cpp
   tst_types.cpp
 )
 

@@ -100,7 +100,7 @@ read_reparse_point_data(char* buffer, size_t bufsize, const path& p, std::error_
   if (!::DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT,
                          nullptr,  // in buffer
                          0,        // in buffer size
-                         buffer, bufsize, &retlen,
+                         buffer, static_cast<DWORD>(bufsize), &retlen,
                          nullptr)) {  // overlapped structure
     ec = std::error_code(::GetLastError(), std::system_category());
     return false;

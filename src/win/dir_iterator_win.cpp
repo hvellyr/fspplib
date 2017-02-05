@@ -81,7 +81,10 @@ public:
         continue;
       }
 
-      _current.assign(_path / data.cFileName);
+      const auto size = (static_cast<LONGLONG>(data.nFileSizeHigh)
+                         * (static_cast<LONGLONG>(MAXDWORD) + 1))
+                        + static_cast<LONGLONG>(data.nFileSizeLow);
+      _current.assign(_path / data.cFileName, size);
       ec.clear();
       return;
     }

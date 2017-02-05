@@ -6,6 +6,8 @@
 
 #include "fspp/details/file_status.hpp"
 #include "fspp/details/path.hpp"
+#include "fspp/details/types.hpp"
+#include "fspp/estd/optional.hpp"
 
 #include <iterator>
 #include <memory>
@@ -56,8 +58,19 @@ public:
    * call (i.e. symlinks are not followed). */
   file_status symlink_status(std::error_code& ec) const;
 
+  /*! Returns the file_size of this entry
+   *
+   * @returns if *this contains a cached file size, return it. Otherwise return
+   * file_size(path()) or file_size(path(), ec) respectively.
+   *
+   * @throws As specified in Error reporting (7). */
+  file_size_type file_size() const;
+  file_size_type file_size(std::error_code& ec) const noexcept;
+
   /*! Assigns new content to the directory entry object. Sets the path to p. */
   void assign(const filesystem::path& p);
+
+  void assign(const filesystem::path& p, file_size_type file_size);
 
   /*! Compares the path with the directory entry rhs. */
   friend bool operator==(const directory_entry& lhs, const directory_entry& rhs);
@@ -69,6 +82,7 @@ public:
 
 private:
   filesystem::path _path;
+  estd::optional<file_size_type> _file_size;
 };
 
 

@@ -4,6 +4,8 @@
 
 #include "fspp/details/operations.hpp"
 
+#include "fspp/estd/optional.hpp"
+
 #include <memory>
 #include <vector>
 
@@ -16,9 +18,11 @@ inline directory_entry::directory_entry(const filesystem::path& p)
 {
 }
 
+
 #if defined(FSPP_IS_VS2013)
 inline directory_entry::directory_entry(directory_entry&& rhs)
   : _path(std::move(rhs._path))
+  , _file_size(std::move(rhs._file_size))
 {
 }
 
@@ -27,6 +31,7 @@ inline directory_entry&
 directory_entry::operator=(directory_entry&& rhs)
 {
   _path = std::move(rhs._path);
+  _file_size = std::move(rhs._file_size);
   return *this;
 }
 #endif
@@ -73,10 +78,33 @@ directory_entry::symlink_status(std::error_code& ec) const
 }
 
 
+inline file_size_type
+directory_entry::file_size() const
+{
+  return _file_size ? _file_size.value() : filesystem::file_size(path());
+}
+
+
+inline file_size_type
+directory_entry::file_size(std::error_code& ec) const noexcept
+{
+  return _file_size ? _file_size.value() : filesystem::file_size(path(), ec);
+}
+
+
 inline void
 directory_entry::assign(const filesystem::path& p)
 {
   _path = p;
+  _file_size.reset();
+}
+
+
+inline void
+directory_entry::assign(const filesystem::path& p, file_size_type file_size)
+{
+  _path = p;
+  _file_size = file_size;
 }
 
 

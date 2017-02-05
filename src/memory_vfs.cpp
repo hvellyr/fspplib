@@ -214,7 +214,7 @@ public:
   {
     if (!_is_store_set) {
       _is_store_set = true;
-      _store.assign(_parent_path / _iter->first);
+      _store.assign(_parent_path / _iter->first, _iter->second->_file_size);
     }
     return _store;
   }

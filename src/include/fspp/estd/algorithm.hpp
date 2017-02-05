@@ -4,11 +4,14 @@
 
 #include "fspp/details/config.hpp"
 
+#include <algorithm>
 #include <utility>
 
 
 namespace eyestep {
 namespace estd {
+
+#if !defined(FSPP_HAVE_STD_MISMATCH_WITH_PREDICATE)
 
 /*! A C++14 compliant std::mismatch() variant.  */
 template <class InputIt1, class InputIt2, class Predicate>
@@ -22,6 +25,12 @@ mismatch(
   }
   return std::make_pair(i_first1, i_first2);
 }
+
+#else
+
+using std::mismatch;
+
+#endif
 
 }  // namespace estd
 }  // namespace eyestep

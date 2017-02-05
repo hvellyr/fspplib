@@ -79,6 +79,19 @@ CHECK_CXX_SOURCE_COMPILES("
   }
 " FSPP_HAVE_STD_STRINGSTREAM_COPYASSIGN)
 
+CHECK_CXX_SOURCE_COMPILES("
+  #include <algorithm>
+  #include <vector>
+  int main() {
+    auto a = std::vector<int>{};
+    auto b = std::vector<int>{};
+    auto f = std::mismatch(
+      std::begin(a), std::end(a), std::begin(b), std::end(b),
+      [](int i, int j) { return i == j; });
+    return 0;
+  }
+" FSPP_HAVE_STD_MISMATCH_WITH_PREDICATE)
+
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/src/include/fspp/details/config.hpp.in
                ${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp)
 

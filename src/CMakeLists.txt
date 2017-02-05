@@ -24,6 +24,7 @@ elseif(UNIX)
 endif()
 
 add_library(fspplib
+  include/fspp/details/platform.hpp
   ${platform_sources}
 )
 target_include_directories(fspplib PUBLIC

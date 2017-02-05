@@ -29,6 +29,7 @@ add_library(fspplib
   include/fspp/estd/memory.hpp
   include/fspp/estd/optional.hpp
   include/fspp/estd/type_traits.hpp
+  include/fspp/utility/scope.hpp
   ${platform_sources}
 )
 target_include_directories(fspplib PUBLIC

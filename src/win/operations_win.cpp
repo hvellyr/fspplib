@@ -362,7 +362,7 @@ create_hard_link(const path& target_p, const path& link_p, std::error_code& ec) 
 void
 create_symlink(const path& target_p, const path& link_p, std::error_code& ec) NOEXCEPT
 {
-  if (!::CreateSymbolicLinkW(target_p.c_str(), link_p.c_str(), 0x0)) {
+  if (!::CreateSymbolicLinkW(link_p.c_str(), target_p.c_str(), 0x0)) {
     ec = std::error_code(::GetLastError(), std::system_category());
   }
   else {
@@ -377,7 +377,7 @@ create_directory_symlink(const path& target_p,
                          std::error_code& ec) NOEXCEPT
 {
   if (!::CreateSymbolicLinkW(
-        target_p.c_str(), link_p.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY)) {
+        link_p.c_str(), target_p.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY)) {
     ec = std::error_code(::GetLastError(), std::system_category());
   }
   else {

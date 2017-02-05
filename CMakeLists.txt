@@ -111,6 +111,15 @@ CHECK_CXX_SOURCE_COMPILES("
   }
 " FSPP_HAVE_STD_ENABLE_IF_T)
 
+CHECK_CXX_SOURCE_COMPILES("
+  #include <optional>
+  int main() {
+    auto f = std::optional<int>();
+    return 0;
+  }
+" FSPP_HAVE_STD_OPTIONAL)
+
+
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/src/include/fspp/details/config.hpp.in
                ${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp)
 

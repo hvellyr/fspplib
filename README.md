@@ -31,3 +31,8 @@ License
 
 Distributed under a modified BSD license.  See [LICENSE](LICENSE) for
 details.
+
+CI Status
+---------
+[![Build status](https://ci.appveyor.com/api/projects/status/m6qkc7co91bdolpp/branch/master?svg=true)](https://ci.appveyor.com/project/hvellyr/fspplib/branch/master)
+[![Build Status](https://travis-ci.org/hvellyr/fspplib.svg?branch=master)](https://travis-ci.org/hvellyr/fspplib)

@@ -31,17 +31,6 @@
     function symlink_status              |-    |i    |i    |i    |
     function temp_directory_path         |-    |i    |i    |i    |
 
-    function is_block_file               i
-    function is_character_file           i
-    function is_directory                i
-    function is_empty                    i
-    function is_fifo                     i
-    function is_other                    i
-    function is_regular_file             i
-    function is_socket                   i
-    function is_symlink                  i
-    function status_known                i
-
 
 - implement missing operations (absolute, system_complete, canonical, ...)
 
@@ -58,3 +47,9 @@
 - Can't we cache status() on directory_entry like file_size()?
 
 - support for OS9 vs. Unix path style on mac
+
+
+Follow up on proposed changes to the standard, esp:
+
+- US 61; 27.10.8.4.9 [path.decompose] ¶8: Leading dots in filename() should not begin an extension
+  cf. http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0492r0.html#US61

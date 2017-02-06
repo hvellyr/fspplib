@@ -15,6 +15,13 @@
 namespace eyestep {
 namespace filesystem {
 
+/*! Returns the current path, obtained as if by POSIX getcwd.
+ *
+ * @note This operation doesn't work with the virtual filesystem.
+ */
+FSPP_API path
+current_path();
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).
@@ -119,9 +126,6 @@ create_directory_symlink(const path& target,
                          const path& link,
                          std::error_code& ec) NOEXCEPT;
 
-/*! Returns the current path, obtained as if by POSIX getcwd. */
-FSPP_API path
-current_path();
 /*! Returns the current path, obtained as if by POSIX getcwd.  Returns path() if error
  * occurs. */
 FSPP_API path

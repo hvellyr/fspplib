@@ -26,7 +26,7 @@ namespace eyestep {
 namespace filesystem {
 namespace tests {
 
-TEST_CASE("status", "[operations]")
+TEST_CASE("status", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     {
@@ -54,7 +54,7 @@ TEST_CASE("status", "[operations]")
 }
 
 
-TEST_CASE("is_empty", "[operations]")
+TEST_CASE("is_empty", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     create_directories(root / "abc");
@@ -72,7 +72,7 @@ TEST_CASE("is_empty", "[operations]")
 }
 
 
-TEST_CASE("last_write_time", "[operations]")
+TEST_CASE("last_write_time", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     create_directories(root / "abc/def/foo");
@@ -91,7 +91,7 @@ TEST_CASE("last_write_time", "[operations]")
 }
 
 
-TEST_CASE("last_write_time in memory vfs", "[operations]")
+TEST_CASE("last_write_time in memory vfs", "[operations][emulate-win]")
 {
   vfs::with_memory_vfs("//<vfs>", [](vfs::IFilesystem&) {
     auto root = u8path("//<vfs>");
@@ -111,7 +111,7 @@ TEST_CASE("last_write_time in memory vfs", "[operations]")
 }
 
 
-TEST_CASE("symlinks", "[operations]")
+TEST_CASE("symlinks", "[operations][emulate-win]")
 {
   with_privilege_check([]() {
     with_temp_dir([](const path& root) {
@@ -124,7 +124,7 @@ TEST_CASE("symlinks", "[operations]")
 }
 
 
-TEST_CASE("hardlinks", "[operations]")
+TEST_CASE("hardlinks", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -142,7 +142,7 @@ TEST_CASE("hardlinks", "[operations]")
 }
 
 
-TEST_CASE("equivalent", "[operations]")
+TEST_CASE("equivalent", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -165,7 +165,7 @@ TEST_CASE("equivalent", "[operations]")
 }
 
 
-TEST_CASE("equivalent with symlinks", "[operations]")
+TEST_CASE("equivalent with symlinks", "[operations][emulate-win]")
 {
   with_privilege_check([]() {
     with_temp_dir([](const path& root) {
@@ -179,7 +179,7 @@ TEST_CASE("equivalent with symlinks", "[operations]")
 }
 
 
-TEST_CASE("copy_file", "[operations]")
+TEST_CASE("copy_file", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -198,7 +198,7 @@ TEST_CASE("copy_file", "[operations]")
 }
 
 
-TEST_CASE("copy_file to existing file - none", "[operations]")
+TEST_CASE("copy_file to existing file - none", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -212,7 +212,7 @@ TEST_CASE("copy_file to existing file - none", "[operations]")
 }
 
 
-TEST_CASE("copy_file to existing file - skip_existing", "[operations]")
+TEST_CASE("copy_file to existing file - skip_existing", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -228,7 +228,7 @@ TEST_CASE("copy_file to existing file - skip_existing", "[operations]")
 }
 
 
-TEST_CASE("copy_file to existing file - overwrite_existing", "[operations]")
+TEST_CASE("copy_file to existing file - overwrite_existing", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -243,7 +243,7 @@ TEST_CASE("copy_file to existing file - overwrite_existing", "[operations]")
 }
 
 
-TEST_CASE("copy_file to existing file - update_existing", "[operations]")
+TEST_CASE("copy_file to existing file - update_existing", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -266,7 +266,7 @@ TEST_CASE("copy_file to existing file - update_existing", "[operations]")
 }
 
 
-TEST_CASE("copy_file - fails if target is dir", "[operations]")
+TEST_CASE("copy_file - fails if target is dir", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     with_stream_for_writing(
@@ -281,7 +281,7 @@ TEST_CASE("copy_file - fails if target is dir", "[operations]")
 }
 
 
-TEST_CASE("copy_file - large file", "[operations]")
+TEST_CASE("copy_file - large file", "[operations][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     auto data = make_random_string(1 << 16);
@@ -356,7 +356,7 @@ TEST_CASE("copy_symlink - to directory", "[operations]")
 }
 
 
-TEST_CASE("copy", "[operations][copy]")
+TEST_CASE("copy", "[operations][copy][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     create_directory(root / "foo");
@@ -378,7 +378,7 @@ TEST_CASE("copy", "[operations][copy]")
 }
 
 
-TEST_CASE("copy - directories", "[operations][copy]")
+TEST_CASE("copy - directories", "[operations][copy][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     create_directories(root / "foo/bar/gaz");
@@ -406,7 +406,7 @@ TEST_CASE("copy - directories", "[operations][copy]")
 }
 
 
-TEST_CASE("copy - directory recursive", "[operations][copy]")
+TEST_CASE("copy - directory recursive", "[operations][copy][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     create_directories(root / "foo/bar/gaz");
@@ -489,7 +489,7 @@ TEST_CASE("copy - file to dir", "[operations][copy]")
 }
 
 
-TEST_CASE("copy - dir to file", "[operations][copy]")
+TEST_CASE("copy - dir to file", "[operations][copy][emulate-win]")
 {
   with_temp_dir([](const path& root) {
     create_directories(root / "foo");

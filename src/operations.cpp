@@ -1104,6 +1104,77 @@ touch(const path& p, std::error_code& ec) NOEXCEPT
 }
 
 
+path
+weakly_canonical(const path& p)
+{
+  std::error_code ec;
+  auto rv = weakly_canonical(p, ec);
+  if (ec) {
+    throw filesystem_error("failed to make a weakly_canonical", p, ec);
+  }
+  return rv;
+}
+
+
+path
+weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT
+{
+  using std::begin;
+  using std::end;
+  using std::next;
+
+  auto it = end(p);
+  auto i_end = end(p);
+
+  auto first = p;
+  while (!first.empty()) {
+    auto st = status(first, ec);
+    if (ec) {
+      return {};
+    }
+
+    if (st.type() != file_type::not_found) {
+      break;
+    }
+    --it;
+    first.remove_filename();
+  }
+
+  if (first.empty()) {
+    return p.lexically_normal();
+  }
+
+  auto canonical_first = canonical(first, ec);
+  if (ec) {
+    return {};
+  }
+  if (it == i_end) {
+    return canonical_first;
+  }
+
+  auto second = canonical_first;
+  // the canonical first part may end in a ".".  Removing that here avoids a full
+  // lexically_normal() run on the entire (canonical_first / second) path.
+  if (second.filename().native() == k_dot.native()) {
+    second.remove_filename();
+  }
+
+  for (; it != i_end; ++it) {
+    if (it->native() == k_dot.native() && next(it) != i_end) {
+      // ignore
+    }
+    else if (it->native() == k_dotdot.native() && second.has_filename()) {
+      second.remove_filename();
+    }
+    else {
+      second /= *it;
+    }
+  }
+
+  return second;
+}
+
+
 bool
 status_known(file_status s) NOEXCEPT
 {

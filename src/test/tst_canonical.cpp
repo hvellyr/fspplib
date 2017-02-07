@@ -115,6 +115,129 @@ TEST_CASE("canonical with too many symlinks level", "[operations]")
   });
 }
 
+
+TEST_CASE("weakly_canonical", "[operations]")
+{
+  with_temp_dir([&](const path& root) {
+    const auto canonical_root = canonical(root);
+    create_directories(root / "foo");
+
+    REQUIRE(u8path("foo/abc/file.txt")
+            == weakly_canonical(root / "foo/abc/bar/../file.txt")
+                 .lexically_relative(canonical_root));
+
+    // the return value is a path in normal form
+    REQUIRE(u8path("foo/abc/gaz/.")
+            == weakly_canonical(root / "foo/abc/bar/./moo//../../gaz/.")
+                 .lexically_relative(canonical_root));
+  });
+}
+
+
+TEST_CASE("weakly_canonical with all elements existing", "[operations]")
+{
+  with_temp_dir([&](const path& root) {
+    const auto canonical_root = canonical(root);
+    create_directories(root / "foo/bar");
+    write_file(root / "foo/file.txt", "hello world");
+
+    REQUIRE(u8path("foo/file.txt")
+            == weakly_canonical(root / "foo/bar/../file.txt")
+                 .lexically_relative(canonical_root));
+  });
+}
+
+
+TEST_CASE("weakly_canonical with symlinks", "[operations][gck]")
+{
+#if defined(FSPP_IS_WIN)
+  with_privilege_check([]() {
+    with_temp_dir([&](const path& root) {
+      const auto canonical_root = canonical(root);
+
+      create_directories(root / "moo");
+      create_directories(root / "foo");
+      create_directory_symlink(root / "moo", root / "foo/abc");
+
+      REQUIRE(u8path("moo/bar/file.txt")
+              == weakly_canonical(root / "foo/abc/bar/file.txt")
+              .lexically_relative(canonical_root));
+
+      // the return value is a path in normal form
+      REQUIRE(u8path("moo\\bar\\gaz\\.")
+              == weakly_canonical(root / "foo/abc/./bar//gaz/.")
+                   .lexically_relative(canonical_root));
+    });
+    });
+#else
+  with_temp_dir([&](const path& root) {
+    const auto canonical_root = canonical(root);
+
+    create_directories(root / "moo");
+    create_directories(root / "foo");
+    create_directory_symlink(root / "moo", root / "foo/abc");
+
+    REQUIRE(u8path("moo/file.txt")
+            == weakly_canonical(root / "foo/abc/bar/../file.txt")
+                 .lexically_relative(canonical_root));
+
+    // the return value is a path in normal form
+    REQUIRE(u8path("gaz/.")
+            == weakly_canonical(root / "foo/abc/./bar//../../gaz/.")
+                 .lexically_relative(canonical_root));
+  });
+#endif
+}
+
+
+TEST_CASE("weakly_canonical with (broken) symlinks", "[operations]")
+{
+#if defined(FSPP_IS_WIN)
+  with_privilege_check([]() {
+    with_temp_dir([&](const path& root) {
+      const auto canonical_root = canonical(root);
+
+      create_directories(root / "foo");
+      create_directory_symlink("bar", root / "foo/abc");
+
+#if 0
+      REQUIRE(u8path("foo/file.txt")
+              == weakly_canonical(root / "foo/abc/file.txt")
+                   .lexically_relative(canonical_root));
+#endif
+      // the return value is a path in normal form
+      REQUIRE(u8path("foo/abc/moo/gaz/.")
+              == weakly_canonical(root / "foo/abc/./moo//gaz/.")
+                   .lexically_relative(canonical_root));
+    });
+  });
+#else
+  with_temp_dir([&](const path& root) {
+    const auto canonical_root = canonical(root);
+
+    create_directories(root / "foo");
+    create_directory_symlink("./bar", root / "foo/abc");
+
+    REQUIRE(u8path("foo/file.txt")
+            == weakly_canonical(root / "foo/abc/../file.txt")
+                 .lexically_relative(canonical_root));
+
+    // the return value is a path in normal form
+    REQUIRE(u8path("foo/gaz/.")
+            == weakly_canonical(root / "foo/abc/./moo//../../gaz/.")
+                 .lexically_relative(canonical_root));
+  });
+#endif
+}
+
+
+TEST_CASE("weakly_canonical with entire missing root", "[operations]")
+{
+  REQUIRE(current_path() / "very-unlikely-to-exist/foo/file.txt"
+          == weakly_canonical(current_path() / "very-unlikely-to-exist/foo/bar/../file.txt"));
+}
+
+
 }  // namespace tests
 }  // namespace filesystem
 }  // namespace eyestep

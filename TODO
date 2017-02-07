@@ -3,7 +3,7 @@
     function absolute                    |-    |i    |i    |i    |
     function system_complete             |-    |i    |i    |i    |
     function canonical                   |-    |i    |i    |i    |
-    function weakly_canonical            |     |     |     |     |
+    function weakly_canonical            |-    |i    |i    |i    |
     function relative                    |     |     |     |     |
     function proximate                   |     |     |     |     |
     function copy                        |i    |i    |i    |i    |

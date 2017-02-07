@@ -86,6 +86,22 @@ canonical(const path& p, std::error_code& ec) NOEXCEPT;
 FSPP_API path
 canonical(const path& p, const path& base, std::error_code& ec) NOEXCEPT;
 
+/*! Returns a path composed by operator/= from the result of calling canonical() without a
+ *  base argument and with a path argument composed of the leading elements of @p p that
+ *  exist (as determined by status(p) or status(p, ec)), if any, followed by the elements
+ *  of @p p that do not exist, if any.  The resulting path is in normal form.
+ *
+ * @returns A normal path of the form canonical(x)/y, where x is a path composed of the
+ *     longest leading sequence of elements in @p p that exist, and y is a path composed
+ *     of the remaining trailing non-existent elements of @p p.
+ *
+ * @note The function weakly_canonical() was introduced to simplify operational semantics
+ *     of relative(). */
+FSPP_API path
+weakly_canonical(const path& p);
+FSPP_API path
+weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT;
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).

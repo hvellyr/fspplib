@@ -1,6 +1,6 @@
                                          |Mem  |Mac  |Win  |Unix |
 ------------------------------------------------------------------
-    function absolute                    |     |     |     |     |
+    function absolute                    |-    |i    |i    |i    |
     function system_complete             |     |     |     |     |
     function canonical                   |     |     |     |     |
     function weakly_canonical            |     |     |     |     |

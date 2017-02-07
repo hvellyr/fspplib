@@ -505,6 +505,27 @@ TEST_CASE("copy - dir to file", "[operations][copy][emulate-win]")
   });
 }
 
+
+TEST_CASE("absolute", "[operations][emulate-win]")
+{
+#if defined(FSPP_IS_WIN) || defined(FSPP_EMULATE_WIN_PATH)
+  auto base = u8path("d:\\Foo\\bar");
+
+  REQUIRE(u8path("c:\\Users") == absolute(u8path("c:\\Users"), base));
+  REQUIRE(u8path("c:\\Foo\\bar\\text.txt") == absolute(u8path("c:text.txt"), base));
+  REQUIRE(u8path("d:\\var\\tmp\\file.txt")
+          == absolute(u8path("\\var\\tmp\\file.txt"), base));
+  REQUIRE(u8path("d:\\Foo\\bar\\..\\file.txt") == absolute(u8path("..\\file.txt"), base));
+
+#else
+  auto base = u8path("/foo/bar");
+
+  REQUIRE(u8path("/var/tmp/file.txt") == absolute(u8path("/var/tmp/file.txt"), base));
+  REQUIRE(u8path("/foo/bar/../file.txt") == absolute(u8path("../file.txt"), base));
+
+#endif
+}
+
 }  // namespace tests
 }  // namespace filesystem
 }  // namespace eyestep

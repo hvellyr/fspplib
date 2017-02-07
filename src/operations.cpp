@@ -17,6 +17,57 @@
 namespace eyestep {
 namespace filesystem {
 
+FSPP_API path
+absolute(const path& p, const path& base, std::error_code& ec)
+{
+  const auto absolute_if_rel = [](const path& base1, std::error_code& ec1) -> path {
+    if (base1.is_absolute()) {
+      ec1.clear();
+      return base1;
+    }
+    else {
+      const auto cp = current_path(ec1);
+      if (ec1) {
+        return {};
+      }
+
+      return absolute(base1, cp, ec1);
+    }
+  };
+
+  const auto has_root_name = p.has_root_name();
+  const auto has_root_dir = p.has_root_directory();
+
+  if (has_root_name && has_root_dir) {
+    ec.clear();
+    return p;
+  }
+  else if (has_root_name && !has_root_dir) {
+    const auto abs_base = absolute_if_rel(base, ec);
+    return p.root_name() / abs_base.root_directory() / abs_base.relative_path()
+           / p.relative_path();
+  }
+  else if (!has_root_name && has_root_dir) {
+    return absolute_if_rel(base, ec).root_name() / p;
+  }
+
+  return absolute_if_rel(base, ec) / p;
+}
+
+
+path
+absolute(const path& p, const path& base)
+{
+  std::error_code ec;
+  const auto rv = absolute(p, base, ec);
+  if (ec) {
+    throw filesystem_error("can't make path absolute ", p, base, ec);
+  }
+
+  return rv;
+}
+
+
 void
 copy(const path& from, const path& to)
 {

@@ -22,6 +22,34 @@ namespace filesystem {
 FSPP_API path
 current_path();
 
+/*! Returns absolute path of p relative to base according to the following rules:
+ *
+ * - If @p p has both root name and root directory (e.g. "C:\users", then the path is
+ *   returned, unmodified.
+ *
+ * - If @p p has a root name not followed by a root directory (e.g. "C:text.txt"), then @p
+ *   base is inserted between @p p's root name and the remainder of @p p.  Formally,
+ *   p.root_name() / absolute(base).root_directory() / absolute(base).relative_path() /
+ *   p.relative_path() is returned,
+ *
+ * - If @p p has no root name, but has a root directory (e.g. "/var/tmp/file.txt" on a
+ *   POSIX system or "\users\ABC\Document.doc" on Windows, then the root name of @p base,
+ *   if it has one, is prepended to @p p (on a POSIX system, @p p is not modified, on a
+ *   Windows system, "\users\ABC\Document.doc" becomes "C:\users\ABC\Document.doc".
+ *   Formally, absolute(base).root_name() / p is returned.
+ *
+ * - If @ p has no root name and no root directory (e.g. "../file.txt", then the entire @p
+ *   base is prepended to @p p.  Formally, absolute(base) / p is returned.
+ *
+ * @note This operation doesn't work with the virtual filesystem since it depends
+ *   externally and internally on current_path().
+ */
+FSPP_API path
+absolute(const path& p, const path& base = current_path());
+/*! @note extension to C++ standard */
+FSPP_API path
+absolute(const path& p, const path& base, std::error_code& ec);
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).

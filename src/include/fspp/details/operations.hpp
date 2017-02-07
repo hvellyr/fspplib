@@ -121,6 +121,20 @@ relative(const path& p, const path& base = current_path());
 FSPP_API path
 relative(const path& p, const path& base, std::error_code& ec) NOEXCEPT;
 
+/*! Returns proximate(p, current_path(), ec) */
+FSPP_API path
+proximate(const path& p, std::error_code& ec) NOEXCEPT;
+
+/*! Effectively returns weakly_canonical(p).lexically_proximate(weakly_canonical(base)) or
+ *  weakly_canonical(p, ec).lexically_proximate(weakly_canonical(base, ec)). */
+FSPP_API path
+proximate(const path& p, const path& base = current_path());
+/*! Effectively returns weakly_canonical(p).lexically_proximate(weakly_canonical(base)) or
+ *  weakly_canonical(p, ec).lexically_proximate(weakly_canonical(base, ec)), except it
+ *  returns path() at the first error occurrence, if any. */
+FSPP_API path
+proximate(const path& p, const path& base, std::error_code& ec) NOEXCEPT;
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).

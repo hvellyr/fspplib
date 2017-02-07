@@ -851,6 +851,47 @@ permissions(const path& p, perms prms, std::error_code& ec) NOEXCEPT
 
 
 path
+proximate(const path& p, std::error_code& ec) NOEXCEPT
+{
+  const auto base = current_path(ec);
+  if (ec) {
+    return {};
+  }
+
+  return proximate(p, base, ec);
+}
+
+
+path
+proximate(const path& p, const path& base)
+{
+  std::error_code ec;
+  auto rv = proximate(p, base, ec);
+  if (ec) {
+    throw filesystem_error("failed to get proximate path", p, base, ec);
+  }
+
+  return rv;
+}
+
+
+path
+proximate(const path& p, const path& base, std::error_code& ec) NOEXCEPT
+{
+  auto wp = weakly_canonical(p, ec);
+  if (ec) {
+    return {};
+  }
+  auto bp = weakly_canonical(base, ec);
+  if (ec) {
+    return {};
+  }
+
+  return wp.lexically_proximate(bp);
+}
+
+
+path
 read_symlink(const path& p)
 {
   std::error_code ec;

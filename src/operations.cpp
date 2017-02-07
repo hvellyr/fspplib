@@ -876,6 +876,46 @@ read_symlink(const path& p, std::error_code& ec) NOEXCEPT
 }
 
 
+path
+relative(const path& p, std::error_code& ec) NOEXCEPT
+{
+  const auto base = current_path(ec);
+  if (ec) {
+    return {};
+  }
+
+  return relative(p, base, ec);
+}
+
+
+path
+relative(const path& p, const path& base)
+{
+  std::error_code ec;
+  auto rv = relative(p, base, ec);
+  if (ec) {
+    throw filesystem_error("failed to get relative path", p, base, ec);
+  }
+  return rv;
+}
+
+
+path
+relative(const path& p, const path& base, std::error_code& ec) NOEXCEPT
+{
+  auto wp = weakly_canonical(p, ec);
+  if (ec) {
+    return {};
+  }
+  auto bp = weakly_canonical(base, ec);
+  if (ec) {
+    return {};
+  }
+
+  return wp.lexically_relative(bp);
+}
+
+
 bool
 remove(const path& p)
 {

@@ -73,6 +73,9 @@ status(const path& p, std::error_code& ec) NOEXCEPT;
 file_status
 symlink_status(const path& p, std::error_code& ec) NOEXCEPT;
 
+path
+system_complete(const path& p, std::error_code& ec) NOEXCEPT;
+
 }  // namespace impl
 }  // namespace filesystem
 }  // namespace eyestep

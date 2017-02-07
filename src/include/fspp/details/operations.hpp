@@ -50,6 +50,24 @@ absolute(const path& p, const path& base = current_path());
 FSPP_API path
 absolute(const path& p, const path& base, std::error_code& ec);
 
+/*! Obtains the absolute path that identifies the file that the OS file opening API would
+ * access given the pathname @p p.
+ *
+ * On POSIX systems, this is equivalent to absolute() with the default base
+ * (current_path()).  On Windows systems, each logical drive has its own current working
+ * directory though, and so if @p p is not already absolute and has a root name component
+ * (e.g. "E:filename.txt"), that drive's current working directory is used, which may have
+ * been set by an earlier executed program.
+ *
+ * @note This operation doesn't work with the virtual filesystem since it depends
+ *   externally and internally on current_path().
+ */
+FSPP_API path
+system_complete(const path& p);
+FSPP_API path
+system_complete(const path& p, std::error_code& ec) NOEXCEPT;
+
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).

@@ -910,6 +910,19 @@ symlink_status(const path& p, std::error_code& ec) NOEXCEPT
 
 
 path
+system_complete(const path& p)
+{
+  std::error_code ec;
+  auto rv = system_complete(p, ec);
+  if (ec) {
+    throw filesystem_error("can't make complete path", p, ec);
+  }
+
+  return rv;
+}
+
+
+path
 temp_directory_path()
 {
   std::error_code ec;

@@ -12,6 +12,7 @@
 
 #include <windows.h>
 
+#include <array>
 #include <limits>
 #include <system_error>
 #include <tuple>
@@ -844,6 +845,37 @@ current_path(const path& p, std::error_code& ec) NOEXCEPT
   }
   else {
     ec.clear();
+  }
+}
+
+
+path
+system_complete(const path& p, std::error_code& ec) NOEXCEPT
+{
+  if (p.empty() || p.is_absolute()) {
+    ec.clear();
+    return p;
+  }
+  else {
+    auto buffer = std::array<wchar_t, 258>{};
+
+    auto len = ::GetFullPathNameW(
+      p.c_str(), static_cast<DWORD>(buffer.size()), buffer.data(), nullptr);
+    if (len < buffer.size()) {
+      return path{buffer.data()};
+    }
+    else {
+      // try again with a larger buffer
+      auto buffer2 = std::vector<wchar_t>(len);
+      len = ::GetFullPathNameW(
+        p.c_str(), static_cast<DWORD>(buffer2.size()), buffer.data(), nullptr);
+      if (len < buffer2.size()) {
+        ec = std::make_error_code(std::errc::filename_too_long);
+        return {};
+      }
+
+      return path{buffer2.data()};
+    }
   }
 }
 

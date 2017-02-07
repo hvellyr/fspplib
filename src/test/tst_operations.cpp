@@ -526,6 +526,28 @@ TEST_CASE("absolute", "[operations][emulate-win]")
 #endif
 }
 
+
+TEST_CASE("system_complete", "[operations]")
+{
+#if defined(FSPP_IS_WIN)
+  // It is basically impossible to test system_complete in reliable
+  // and safe way.  It use global system-wide state (current path per
+  // device), which might be changed by other applications.  The best
+  // we can try here is to check that the result is indeed different
+  // to the input.
+  REQUIRE(u8path("c:\\Users") == system_complete(u8path("c:\\Users")));
+  REQUIRE(u8path("c:text.txt") != system_complete(u8path("c:text.txt")));
+  REQUIRE(u8path("\\var\\tmp\\file.txt")
+          != system_complete(u8path("\\var\\tmp\\file.txt")));
+  REQUIRE(u8path("..\\file.txt") != system_complete(u8path("..\\file.txt")));
+
+#else
+  REQUIRE(u8path("/var/tmp/file.txt") == system_complete(u8path("/var/tmp/file.txt")));
+  REQUIRE(current_path() / "../file.txt" == system_complete(u8path("../file.txt")));
+
+#endif
+}
+
 }  // namespace tests
 }  // namespace filesystem
 }  // namespace eyestep

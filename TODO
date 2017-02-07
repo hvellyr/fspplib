@@ -1,7 +1,7 @@
                                          |Mem  |Mac  |Win  |Unix |
 ------------------------------------------------------------------
     function absolute                    |-    |i    |i    |i    |
-    function system_complete             |     |     |     |     |
+    function system_complete             |-    |i    |i    |i    |
     function canonical                   |     |     |     |     |
     function weakly_canonical            |     |     |     |     |
     function relative                    |     |     |     |     |

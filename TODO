@@ -2,7 +2,7 @@
 ------------------------------------------------------------------
     function absolute                    |-    |i    |i    |i    |
     function system_complete             |-    |i    |i    |i    |
-    function canonical                   |     |     |     |     |
+    function canonical                   |-    |i    |i    |i    |
     function weakly_canonical            |     |     |     |     |
     function relative                    |     |     |     |     |
     function proximate                   |     |     |     |     |

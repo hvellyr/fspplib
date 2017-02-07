@@ -68,6 +68,24 @@ FSPP_API path
 system_complete(const path& p, std::error_code& ec) NOEXCEPT;
 
 
+/*! Converts path @P p to a canonical absolute path
+ *
+ * I.e. an absolute path that has no dot, dot-dot elements or symbolic links.  If @p p is
+ * not an absolute path, the function behaves as if it is first made absolute by
+ * absolute(p, base) or absolute(p).  The path @p p must exist.
+ *
+ * @note The function canonical() is modeled after the POSIX realpath.
+ *
+ * @note This operation doesn't work with the virtual filesystem since it depends
+ *   externally and internally on current_path().
+ */
+FSPP_API path
+canonical(const path& p, const path& base = current_path());
+FSPP_API path
+canonical(const path& p, std::error_code& ec) NOEXCEPT;
+FSPP_API path
+canonical(const path& p, const path& base, std::error_code& ec) NOEXCEPT;
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).

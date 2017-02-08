@@ -8,6 +8,7 @@
 #include "fspp/details/filesystem_error.hpp"
 #include "fspp/details/types.hpp"
 #include "fspp/estd/memory.hpp"
+#include "fspp/limits.hpp"
 #include "fspp/utility/scope.hpp"
 
 #include <windows.h>
@@ -221,7 +222,7 @@ get_path(const path& p, std::error_code& ec)
 {
   int loop_cnt = 0;
   auto q = p;
-  while (loop_cnt < 31) {
+  while (loop_cnt < symlink_loop_maximum()) {
     auto attr = ::GetFileAttributesW(q.c_str());
     if (attr == INVALID_FILE_ATTRIBUTES) {
       ec = std::error_code(::GetLastError(), std::system_category());
@@ -759,7 +760,7 @@ status(const path& p, std::error_code& ec) NOEXCEPT
 {
   int loop_cnt = 0;
   auto q = p;
-  while (loop_cnt < 31) {
+  while (loop_cnt < symlink_loop_maximum()) {
     auto attr = ::GetFileAttributesW(q.c_str());
     if (attr == INVALID_FILE_ATTRIBUTES) {
       auto err = ::GetLastError();

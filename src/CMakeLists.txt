@@ -9,6 +9,7 @@ endif()
 set(posix_sources
     posix/dir_iterator_posix.cpp
     posix/operations_posix.cpp
+    posix/limits_posix.cpp
     )
 
 if(WIN32)
@@ -16,6 +17,7 @@ if(WIN32)
   set(platform_sources
     win/dir_iterator_win.cpp
     win/operations_win.cpp
+    win/limits_win.cpp
     )
 elseif(APPLE)
   set(platform_sources
@@ -59,6 +61,7 @@ add_library(fspplib
   include/fspp/utility/scope.hpp
   include/fspp/utils.hpp
   include/fspp/utils.ipp
+  include/fspp/limits.hpp
   memory_vfs.cpp
   memory_vfs.hpp
   operations.cpp

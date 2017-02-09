@@ -30,6 +30,8 @@ elseif(UNIX)
 endif()
 
 add_library(fspplib
+  common.cpp
+  common.hpp
   dir_iterator.cpp
   dir_iterator_private.hpp
   file.cpp
@@ -52,6 +54,7 @@ add_library(fspplib
   include/fspp/estd/optional.hpp
   include/fspp/estd/type_traits.hpp
   include/fspp/filesystem.hpp
+  include/fspp/limits.hpp
   include/fspp/utility/bitmask_type.hpp
   include/fspp/utility/scope.hpp
   include/fspp/utils.hpp

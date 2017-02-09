@@ -2,6 +2,8 @@
 
 #include "fspp/details/path.hpp"
 
+#include "common.hpp"
+
 #include "fspp/estd/algorithm.hpp"
 
 #include <algorithm>
@@ -13,9 +15,6 @@ namespace filesystem {
 
 namespace {
 using data_iterator = path::string_type::const_iterator;
-
-std::string k_dot = std::string(".");
-std::string k_dotdot = std::string("..");
 
 
 inline bool
@@ -92,30 +91,6 @@ skip_separators_bwd(data_iterator it, data_iterator i_begin)
     --it;
   }
   return it;
-}
-
-
-inline path
-dot_path()
-{
-#if defined(FSPP_IS_WIN) || defined(FSPP_EMULATE_WIN_PATH)
-  static auto s = path(L".");
-#else
-  static auto s = path(".");
-#endif
-  return s;
-}
-
-
-inline path
-dotdot_path()
-{
-#if defined(FSPP_IS_WIN) || defined(FSPP_EMULATE_WIN_PATH)
-  static auto s = path(L"..");
-#else
-  static auto s = path("..");
-#endif
-  return s;
 }
 
 
@@ -391,7 +366,7 @@ path
 path::stem() const
 {
   auto nm = filename();
-  if (nm == dot_path() || nm == dotdot_path()) {
+  if (nm == k_dot || nm == k_dotdot) {
     return nm;
   }
 
@@ -415,7 +390,7 @@ path
 path::extension() const
 {
   auto nm = filename();
-  if (nm == dot_path() || nm == dotdot_path()) {
+  if (nm == k_dot || nm == k_dotdot) {
     return {};
   }
 
@@ -451,10 +426,10 @@ path::lexically_normal() const
   path result;
 
   for (const auto& elt : *this) {
-    if (elt.string() == k_dot) {
+    if (elt.native() == k_dot.native()) {
       // nop.  Leave this out
     }
-    else if (elt.string() == k_dotdot) {
+    else if (elt.native() == k_dotdot.native()) {
       auto len = std::distance(begin(result), end(result));
       if (len == 2 && result.has_root_name() && result.has_root_directory()) {
         // ???
@@ -492,7 +467,7 @@ path::lexically_relative(const path& base) const
     return {};
   }
   else if (mismatched.first == end(*this) && mismatched.second == end(base)) {
-    return {k_dot};
+    return k_dot;
   }
 
   path result;
@@ -591,7 +566,7 @@ auto path::iterator::operator--() -> iterator&
 
     if (_it == i_end) {
       --_it;
-      _elt = dot_path();
+      _elt = k_dot;
       return *this;
     }
   }
@@ -677,7 +652,7 @@ auto path::iterator::operator++() -> iterator&
 
   if (_it == i_end && is_separator(*prev(_it))) {
     --_it;
-    _elt = dot_path();
+    _elt = k_dot;
   }
   else {
     _elt = path(_it, find_next(_it, i_end));

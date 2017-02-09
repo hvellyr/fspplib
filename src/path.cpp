@@ -422,14 +422,17 @@ path::lexically_normal() const
 {
   using std::begin;
   using std::end;
+  using std::next;
 
   path result;
 
-  for (const auto& elt : *this) {
-    if (elt.native() == k_dot.native()) {
+  auto it = begin(*this);
+  auto i_end = end(*this);
+  for ( ; it != i_end; ++it) {
+    if (it->native() == k_dot.native() && std::next(it) != i_end) {
       // nop.  Leave this out
     }
-    else if (elt.native() == k_dotdot.native()) {
+    else if (it->native() == k_dotdot.native()) {
       auto len = std::distance(begin(result), end(result));
       if (len == 2 && result.has_root_name() && result.has_root_directory()) {
         // ???
@@ -439,16 +442,12 @@ path::lexically_normal() const
         result = result.parent_path();
       }
       else {
-        result /= elt;
+        result /= *it;
       }
     }
     else {
-      result /= elt;
+      result /= *it;
     }
-  }
-
-  if (!_data.empty() && is_separator(_data.back())) {
-    result /= k_dot;
   }
 
   return result;

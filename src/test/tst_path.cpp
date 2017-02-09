@@ -865,6 +865,7 @@ TEST_CASE("lexical_normal", "[path][emulate-win]")
   REQUIRE(fs::path("foo/./bar/..").lexically_normal() == "foo");
   REQUIRE(fs::path("foo/.///bar/../").lexically_normal() == "foo/.");
   REQUIRE(fs::path("foo/../..//bar/../").lexically_normal() == "../.");
+  REQUIRE(fs::path("foo/./bar/.").lexically_normal() == "foo/bar/.");
 }
 
 

@@ -21,6 +21,7 @@
 #include <random>
 #include <set>
 #include <sstream>
+#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -110,6 +111,15 @@ with_privilege_check(F f)
     throw;
 #endif
   }
+}
+
+
+// in some compilers (gcc4.9 on ubuntu12?) system errors don't seem to be in
+// generic_category().  Avoid this detail for the tests here.
+inline bool
+is_error(std::error_code ec, std::errc errc)
+{
+  return ec.value() == std::make_error_code(errc).value();
 }
 
 }  // namespace tests

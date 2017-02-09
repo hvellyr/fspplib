@@ -501,7 +501,7 @@ TEST_CASE("copy - dir to file", "[operations][copy][emulate-win]")
     copy(root / "moo", root / "foo/aa.txt", ec);
 
     REQUIRE(is_regular_file(root / "foo/aa.txt"));
-    REQUIRE(ec.value() == std::make_error_code(std::errc::not_a_directory).value());
+    REQUIRE(is_error(ec, std::errc::not_a_directory));
   });
 }
 

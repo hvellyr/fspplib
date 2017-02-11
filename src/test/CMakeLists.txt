@@ -4,6 +4,7 @@ add_executable(fspplib_tests
   main.cpp
   test_utils.hpp
   tst_canonical.cpp
+  tst_dir_entry.cpp
   tst_dir_iter.cpp
   tst_operations.cpp
   tst_path.cpp

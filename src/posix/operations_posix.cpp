@@ -643,5 +643,23 @@ current_path(const path& p, std::error_code& ec) NOEXCEPT
   }
 }
 
+
+path
+system_complete(const path& p, std::error_code& ec) NOEXCEPT
+{
+  if (p.empty() || p.is_absolute()) {
+    ec.clear();
+    return p;
+  }
+  else {
+    const auto cp = current_path(ec);
+    if (ec) {
+      return {};
+    }
+
+    return absolute(p, cp, ec);
+  }
+}
+
 }  // namespace filesystem
 }  // namespace eyestep

@@ -8,10 +8,12 @@
 #include "fspp/details/filesystem_error.hpp"
 #include "fspp/details/types.hpp"
 #include "fspp/estd/memory.hpp"
+#include "fspp/limits.hpp"
 #include "fspp/utility/scope.hpp"
 
 #include <windows.h>
 
+#include <array>
 #include <limits>
 #include <system_error>
 #include <tuple>
@@ -220,7 +222,7 @@ get_path(const path& p, std::error_code& ec)
 {
   int loop_cnt = 0;
   auto q = p;
-  while (loop_cnt < 31) {
+  while (loop_cnt < symlink_loop_maximum()) {
     auto attr = ::GetFileAttributesW(q.c_str());
     if (attr == INVALID_FILE_ATTRIBUTES) {
       ec = std::error_code(::GetLastError(), std::system_category());
@@ -758,7 +760,7 @@ status(const path& p, std::error_code& ec) NOEXCEPT
 {
   int loop_cnt = 0;
   auto q = p;
-  while (loop_cnt < 31) {
+  while (loop_cnt < symlink_loop_maximum()) {
     auto attr = ::GetFileAttributesW(q.c_str());
     if (attr == INVALID_FILE_ATTRIBUTES) {
       auto err = ::GetLastError();
@@ -844,6 +846,37 @@ current_path(const path& p, std::error_code& ec) NOEXCEPT
   }
   else {
     ec.clear();
+  }
+}
+
+
+path
+system_complete(const path& p, std::error_code& ec) NOEXCEPT
+{
+  if (p.empty() || p.is_absolute()) {
+    ec.clear();
+    return p;
+  }
+  else {
+    auto buffer = std::array<wchar_t, 258>{};
+
+    auto len = ::GetFullPathNameW(
+      p.c_str(), static_cast<DWORD>(buffer.size()), buffer.data(), nullptr);
+    if (len < buffer.size()) {
+      return path{buffer.data()};
+    }
+    else {
+      // try again with a larger buffer
+      auto buffer2 = std::vector<wchar_t>(len);
+      len = ::GetFullPathNameW(
+        p.c_str(), static_cast<DWORD>(buffer2.size()), buffer.data(), nullptr);
+      if (len < buffer2.size()) {
+        ec = std::make_error_code(std::errc::filename_too_long);
+        return {};
+      }
+
+      return path{buffer2.data()};
+    }
   }
 }
 

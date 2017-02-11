@@ -25,7 +25,7 @@ namespace fs = eyestep::filesystem;
 #endif
 
 
-TEST_CASE("ctors", "[path]")
+TEST_CASE("ctors", "[path][emulate-win]")
 {
   REQUIRE(std::string("abc" SEP "foo") == fs::path("abc" SEP "foo").string());
 #if defined(FSPP_SUPPORT_WSTRING_API)
@@ -35,7 +35,7 @@ TEST_CASE("ctors", "[path]")
 }
 
 
-TEST_CASE("iterator ctors", "[path]")
+TEST_CASE("iterator ctors", "[path][emulate-win]")
 {
   using std::begin;
   using std::end;
@@ -50,7 +50,7 @@ TEST_CASE("iterator ctors", "[path]")
 }
 
 
-TEST_CASE("string()", "[path]")
+TEST_CASE("string()", "[path][emulate-win]")
 {
   REQUIRE(std::string("abc" SEP "foo") == fs::path("abc" SEP "foo").string());
 #if defined(FSPP_SUPPORT_WSTRING_API)
@@ -59,7 +59,7 @@ TEST_CASE("string()", "[path]")
 }
 
 
-TEST_CASE("native()", "[path]")
+TEST_CASE("native()", "[path][emulate-win]")
 {
 #if defined(FSPP_IS_WIN)
   REQUIRE(std::wstring(L"abc\\foo") == fs::path("abc\\foo").native());
@@ -73,7 +73,7 @@ TEST_CASE("native()", "[path]")
 }
 
 
-TEST_CASE("u8string()", "[path]")
+TEST_CASE("u8string()", "[path][emulate-win]")
 {
   REQUIRE(std::string("abc" SEP "foo") == fs::path("abc" SEP "foo").u8string());
 #if defined(FSPP_SUPPORT_WSTRING_API)
@@ -85,7 +85,7 @@ TEST_CASE("u8string()", "[path]")
 // TODO: u8string with unicode characters
 
 
-TEST_CASE("string cast operator", "[path]")
+TEST_CASE("string cast operator", "[path][emulate-win]")
 {
 #if defined(FSPP_IS_WIN)
   std::wstring s = fs::path(L"abc\\foo");
@@ -97,14 +97,14 @@ TEST_CASE("string cast operator", "[path]")
 }
 
 
-TEST_CASE("generic_string", "[path]")
+TEST_CASE("generic_string", "[path][emulate-win]")
 {
   REQUIRE(std::string("abc/foo") == fs::path("abc/foo").generic_string());
   REQUIRE(std::string("abc/foo") == fs::path("abc\\foo").generic_string());
 }
 
 
-TEST_CASE("append", "[path]")
+TEST_CASE("append", "[path][emulate-win]")
 {
   REQUIRE(std::string("abc" SEP "foo") == fs::path("abc").append("foo").string());
   REQUIRE(std::string("abc" SEP "foo") == fs::path("abc" SEP).append("foo").string());
@@ -135,7 +135,7 @@ TEST_CASE("append", "[path]")
 }
 
 
-TEST_CASE("operator/", "[path]")
+TEST_CASE("operator/", "[path][emulate-win]")
 {
   REQUIRE(std::string("abc" SEP "foo") == (fs::path("abc") / "foo").string());
   REQUIRE(std::string("abc" SEP "foo") == (fs::path("abc" SEP) / "foo").string());
@@ -167,7 +167,7 @@ TEST_CASE("operator/", "[path]")
 // TODO: operator/=
 
 
-TEST_CASE("append with iterators", "[path]")
+TEST_CASE("append with iterators", "[path][emulate-win]")
 {
   auto v = std::vector<char>{'a', 'b', 'c', SEPC, 'f', 'o', 'o'};
   REQUIRE(std::string("dix" SEP "abc" SEP "foo")
@@ -181,7 +181,7 @@ TEST_CASE("append with iterators", "[path]")
 }
 
 
-TEST_CASE("operator+=", "[path]")
+TEST_CASE("operator+=", "[path][emulate-win]")
 {
   REQUIRE(std::string("abcfoo" SEP "dix")
           == (fs::path("abc") += fs::path("foo" SEP "dix")).string());
@@ -196,7 +196,7 @@ TEST_CASE("operator+=", "[path]")
 }
 
 
-TEST_CASE("make_preferred", "[path]")
+TEST_CASE("make_preferred", "[path][emulate-win]")
 {
   REQUIRE(std::string("c:" SEP "abc" SEP "foo" SEP)
           == fs::path("c:/abc/foo/").make_preferred().string());
@@ -204,7 +204,7 @@ TEST_CASE("make_preferred", "[path]")
 }
 
 
-TEST_CASE("iterator", "[path][iterator]")
+TEST_CASE("iterator", "[path][iterator][emulate-win]")
 {
   using namespace std;
   using std::begin;
@@ -298,7 +298,7 @@ TEST_CASE("iterator", "[path][iterator]")
 }
 
 
-TEST_CASE("reverse_iterator", "[path][iterator]")
+TEST_CASE("reverse_iterator", "[path][iterator][emulate-win]")
 {
   using namespace std;
   using std::begin;
@@ -393,7 +393,7 @@ TEST_CASE("reverse_iterator", "[path][iterator]")
 }
 
 
-TEST_CASE("compare ==", "[path]")
+TEST_CASE("compare ==", "[path][emulate-win]")
 {
   REQUIRE(fs::path("/foo/bar") == fs::path("/foo/bar"));
   REQUIRE(fs::path() == fs::path());
@@ -404,7 +404,7 @@ TEST_CASE("compare ==", "[path]")
 }
 
 
-TEST_CASE("compare !=", "[path]")
+TEST_CASE("compare !=", "[path][emulate-win]")
 {
   REQUIRE(fs::path("foo/bar") != fs::path("/foo/bar"));
   REQUIRE(fs::path("a") != fs::path("b"));
@@ -412,7 +412,7 @@ TEST_CASE("compare !=", "[path]")
 }
 
 
-TEST_CASE("compare <", "[path]")
+TEST_CASE("compare <", "[path][emulate-win]")
 {
   REQUIRE(fs::path("/foo/bar") < fs::path("/foo/barx"));
   REQUIRE(fs::path("/foo/bar") < fs::path("/foox/bar"));
@@ -420,7 +420,7 @@ TEST_CASE("compare <", "[path]")
 }
 
 
-TEST_CASE("compare <=", "[path]")
+TEST_CASE("compare <=", "[path][emulate-win]")
 {
   REQUIRE(fs::path("/foo/bar") <= fs::path("/foo/barx"));
   REQUIRE(fs::path("/foo/bar") <= fs::path("/foox/bar"));
@@ -428,7 +428,7 @@ TEST_CASE("compare <=", "[path]")
 }
 
 
-TEST_CASE("compare >", "[path]")
+TEST_CASE("compare >", "[path][emulate-win]")
 {
   REQUIRE(fs::path("/foo/bar") > fs::path());
   REQUIRE(fs::path("/foo/bar") > fs::path("/a"));
@@ -436,7 +436,7 @@ TEST_CASE("compare >", "[path]")
 }
 
 
-TEST_CASE("compare >=", "[path]")
+TEST_CASE("compare >=", "[path][emulate-win]")
 {
   REQUIRE(fs::path("/foo/bar") >= fs::path());
   REQUIRE(fs::path("/foo/bar") >= fs::path("/a"));
@@ -446,7 +446,7 @@ TEST_CASE("compare >=", "[path]")
 
 //----------------------------------------------------------------------------------------
 
-TEST_CASE("root_name", "[path]")
+TEST_CASE("root_name", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " root name")
@@ -468,7 +468,7 @@ TEST_CASE("root_name", "[path]")
 }
 
 
-TEST_CASE("root_directory", "[path]")
+TEST_CASE("root_directory", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " root directory")
@@ -504,7 +504,7 @@ TEST_CASE("root_directory", "[path]")
 }
 
 
-TEST_CASE("root_path", "[path]")
+TEST_CASE("root_path", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " root_path")
@@ -531,7 +531,7 @@ TEST_CASE("root_path", "[path]")
 }
 
 
-TEST_CASE("relative_path", "[path]")
+TEST_CASE("relative_path", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " relative path")
@@ -599,7 +599,7 @@ TEST_CASE("relative_path", "[path]")
 }
 
 
-TEST_CASE("filename", "[path]")
+TEST_CASE("filename", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " filename")
@@ -660,7 +660,7 @@ TEST_CASE("filename", "[path]")
 }
 
 
-TEST_CASE("parent_path", "[path]")
+TEST_CASE("parent_path", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " parent_path")
@@ -720,7 +720,7 @@ TEST_CASE("parent_path", "[path]")
 }
 
 
-TEST_CASE("stem", "[path]")
+TEST_CASE("stem", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " stem")
@@ -743,7 +743,7 @@ TEST_CASE("stem", "[path]")
 }
 
 
-TEST_CASE("extension", "[path]")
+TEST_CASE("extension", "[path][emulate-win]")
 {
   const auto check_it = [](const fs::path& p, bool expq, const fs::path& exp) {
     SECTION(p.string() + " extension")
@@ -766,7 +766,7 @@ TEST_CASE("extension", "[path]")
 }
 
 
-TEST_CASE("is_absolute", "[path]")
+TEST_CASE("is_absolute", "[path][emulate-win]")
 {
 #if defined(FSPP_IS_WIN) || defined(FSPP_EMULATE_WIN_PATH)
   REQUIRE(!fs::path("/foo").is_absolute());
@@ -781,7 +781,7 @@ TEST_CASE("is_absolute", "[path]")
 }
 
 
-TEST_CASE("remove_filename", "[path]")
+TEST_CASE("remove_filename", "[path][emulate-win]")
 {
   SECTION("returns the changed value")
   {
@@ -798,7 +798,7 @@ TEST_CASE("remove_filename", "[path]")
 }
 
 
-TEST_CASE("replace_filename", "[path]")
+TEST_CASE("replace_filename", "[path][emulate-win]")
 {
   SECTION("returns the changed value")
   {
@@ -816,7 +816,7 @@ TEST_CASE("replace_filename", "[path]")
 }
 
 
-TEST_CASE("replace_extension", "[path]")
+TEST_CASE("replace_extension", "[path][emulate-win]")
 {
   SECTION("replacement without leading dot")
   {
@@ -860,15 +860,16 @@ TEST_CASE("replace_extension", "[path]")
 }
 
 
-TEST_CASE("lexical_normal", "[path]")
+TEST_CASE("lexical_normal", "[path][emulate-win]")
 {
   REQUIRE(fs::path("foo/./bar/..").lexically_normal() == "foo");
   REQUIRE(fs::path("foo/.///bar/../").lexically_normal() == "foo/.");
   REQUIRE(fs::path("foo/../..//bar/../").lexically_normal() == "../.");
+  REQUIRE(fs::path("foo/./bar/.").lexically_normal() == "foo/bar/.");
 }
 
 
-TEST_CASE("lexical_relative", "[path]")
+TEST_CASE("lexical_relative", "[path][emulate-win]")
 {
   REQUIRE(fs::path("/a/d").lexically_relative("/a/b/c") == "../../d");
   REQUIRE(fs::path("/a/b/c").lexically_relative("/a/d") == "../b/c");
@@ -881,7 +882,7 @@ TEST_CASE("lexical_relative", "[path]")
 }
 
 
-TEST_CASE("lexical_proximate", "[path]")
+TEST_CASE("lexical_proximate", "[path][emulate-win]")
 {
   REQUIRE(fs::path("/a/d").lexically_proximate("/a/b/c") == "../../d");
   REQUIRE(fs::path("a/b").lexically_proximate("c/d") == "a/b");

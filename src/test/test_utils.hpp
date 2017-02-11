@@ -7,6 +7,7 @@
 #include "fspp/details/types.hpp"
 #include "fspp/details/vfs.hpp"
 #include "fspp/filesystem.hpp"
+#include "fspp/utility/scope.hpp"
 #include "fspp/utils.hpp"
 
 #include <catch/catch.hpp>
@@ -21,6 +22,7 @@
 #include <random>
 #include <set>
 #include <sstream>
+#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -110,6 +112,24 @@ with_privilege_check(F f)
     throw;
 #endif
   }
+}
+
+
+// in some compilers (gcc4.9 on ubuntu12?) system errors don't seem to be in
+// generic_category().  Avoid this detail for the tests here.
+inline bool
+is_error(std::error_code ec, std::errc errc)
+{
+  return ec.value() == std::make_error_code(errc).value();
+}
+
+
+inline utility::Scope
+make_chdir_scope(const path& p)
+{
+  const auto cp = current_path();
+  current_path(p);
+  return utility::make_scope([cp]() { current_path(cp); });
 }
 
 }  // namespace tests

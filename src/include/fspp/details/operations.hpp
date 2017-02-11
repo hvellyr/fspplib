@@ -15,6 +15,93 @@
 namespace eyestep {
 namespace filesystem {
 
+/*! Returns the current path, obtained as if by POSIX getcwd.
+ *
+ * @note This operation doesn't work with the virtual filesystem.
+ */
+FSPP_API path
+current_path();
+
+/*! Returns absolute path of p relative to base according to the following rules:
+ *
+ * - If @p p has both root name and root directory (e.g. "C:\users", then the path is
+ *   returned, unmodified.
+ *
+ * - If @p p has a root name not followed by a root directory (e.g. "C:text.txt"), then @p
+ *   base is inserted between @p p's root name and the remainder of @p p.  Formally,
+ *   p.root_name() / absolute(base).root_directory() / absolute(base).relative_path() /
+ *   p.relative_path() is returned,
+ *
+ * - If @p p has no root name, but has a root directory (e.g. "/var/tmp/file.txt" on a
+ *   POSIX system or "\users\ABC\Document.doc" on Windows, then the root name of @p base,
+ *   if it has one, is prepended to @p p (on a POSIX system, @p p is not modified, on a
+ *   Windows system, "\users\ABC\Document.doc" becomes "C:\users\ABC\Document.doc".
+ *   Formally, absolute(base).root_name() / p is returned.
+ *
+ * - If @ p has no root name and no root directory (e.g. "../file.txt", then the entire @p
+ *   base is prepended to @p p.  Formally, absolute(base) / p is returned.
+ *
+ * @note This operation doesn't work with the virtual filesystem since it depends
+ *   externally and internally on current_path().
+ */
+FSPP_API path
+absolute(const path& p, const path& base = current_path());
+/*! @note extension to C++ standard */
+FSPP_API path
+absolute(const path& p, const path& base, std::error_code& ec);
+
+/*! Obtains the absolute path that identifies the file that the OS file opening API would
+ * access given the pathname @p p.
+ *
+ * On POSIX systems, this is equivalent to absolute() with the default base
+ * (current_path()).  On Windows systems, each logical drive has its own current working
+ * directory though, and so if @p p is not already absolute and has a root name component
+ * (e.g. "E:filename.txt"), that drive's current working directory is used, which may have
+ * been set by an earlier executed program.
+ *
+ * @note This operation doesn't work with the virtual filesystem since it depends
+ *   externally and internally on current_path().
+ */
+FSPP_API path
+system_complete(const path& p);
+FSPP_API path
+system_complete(const path& p, std::error_code& ec) NOEXCEPT;
+
+
+/*! Converts path @P p to a canonical absolute path
+ *
+ * I.e. an absolute path that has no dot, dot-dot elements or symbolic links.  If @p p is
+ * not an absolute path, the function behaves as if it is first made absolute by
+ * absolute(p, base) or absolute(p).  The path @p p must exist.
+ *
+ * @note The function canonical() is modeled after the POSIX realpath.
+ *
+ * @note This operation doesn't work with the virtual filesystem since it depends
+ *   externally and internally on current_path().
+ */
+FSPP_API path
+canonical(const path& p, const path& base = current_path());
+FSPP_API path
+canonical(const path& p, std::error_code& ec) NOEXCEPT;
+FSPP_API path
+canonical(const path& p, const path& base, std::error_code& ec) NOEXCEPT;
+
+/*! Returns a path composed by operator/= from the result of calling canonical() without a
+ *  base argument and with a path argument composed of the leading elements of @p p that
+ *  exist (as determined by status(p) or status(p, ec)), if any, followed by the elements
+ *  of @p p that do not exist, if any.  The resulting path is in normal form.
+ *
+ * @returns A normal path of the form canonical(x)/y, where x is a path composed of the
+ *     longest leading sequence of elements in @p p that exist, and y is a path composed
+ *     of the remaining trailing non-existent elements of @p p.
+ *
+ * @note The function weakly_canonical() was introduced to simplify operational semantics
+ *     of relative(). */
+FSPP_API path
+weakly_canonical(const path& p);
+FSPP_API path
+weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT;
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).
@@ -119,9 +206,6 @@ create_directory_symlink(const path& target,
                          const path& link,
                          std::error_code& ec) NOEXCEPT;
 
-/*! Returns the current path, obtained as if by POSIX getcwd. */
-FSPP_API path
-current_path();
 /*! Returns the current path, obtained as if by POSIX getcwd.  Returns path() if error
  * occurs. */
 FSPP_API path

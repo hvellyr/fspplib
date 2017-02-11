@@ -397,8 +397,9 @@ public:
    */
   path extension() const;
 
-  /*! Returns *this converted to normal form (no redundant dot or dot-dot elements, and if
-   * the last element is a non-root directory separator, dot is added) */
+  /*! Returns *this converted to normal form (no dot (except possibly one at the end) or
+   * dot-dot elements, and if the last element is a non-root directory separator, dot is
+   * added) */
   path lexically_normal() const;
 
   /*! Returns *this made relative to base. */

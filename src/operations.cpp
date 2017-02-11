@@ -2,6 +2,7 @@
 
 #include "fspp/details/operations.hpp"
 
+#include "common.hpp"
 #include "operations_impl.hpp"
 #include "vfs_private.hpp"
 
@@ -9,13 +10,204 @@
 #include "fspp/details/filesystem_error.hpp"
 #include "fspp/details/types.hpp"
 #include "fspp/details/vfs.hpp"
+#include "fspp/limits.hpp"
 #include "fspp/utils.hpp"
 
 #include <chrono>
+#include <tuple>
 
 
 namespace eyestep {
 namespace filesystem {
+
+FSPP_API path
+absolute(const path& p, const path& base, std::error_code& ec)
+{
+  const auto absolute_if_rel = [](const path& base1, std::error_code& ec1) -> path {
+    if (base1.is_absolute()) {
+      ec1.clear();
+      return base1;
+    }
+    else {
+      const auto cp = current_path(ec1);
+      if (ec1) {
+        return {};
+      }
+
+      return absolute(base1, cp, ec1);
+    }
+  };
+
+  const auto has_root_name = p.has_root_name();
+  const auto has_root_dir = p.has_root_directory();
+
+  if (has_root_name && has_root_dir) {
+    ec.clear();
+    return p;
+  }
+  else if (has_root_name && !has_root_dir) {
+    const auto abs_base = absolute_if_rel(base, ec);
+    return p.root_name() / abs_base.root_directory() / abs_base.relative_path()
+           / p.relative_path();
+  }
+  else if (!has_root_name && has_root_dir) {
+    return absolute_if_rel(base, ec).root_name() / p;
+  }
+
+  return absolute_if_rel(base, ec) / p;
+}
+
+
+path
+absolute(const path& p, const path& base)
+{
+  std::error_code ec;
+  const auto rv = absolute(p, base, ec);
+  if (ec) {
+    throw filesystem_error("can't make path absolute ", p, base, ec);
+  }
+
+  return rv;
+}
+
+
+path
+canonical(const path& p, const path& base)
+{
+  std::error_code ec;
+  const auto rv = canonical(p, base, ec);
+  if (ec) {
+    throw filesystem_error("can't make canonical path ", p, base, ec);
+  }
+
+  return rv;
+}
+
+
+path
+canonical(const path& p, std::error_code& ec) NOEXCEPT
+{
+  const auto cp = current_path(ec);
+  if (ec) {
+    return {};
+  }
+  return canonical(p, cp, ec);
+}
+
+
+namespace {
+
+std::tuple<path, bool>
+resolve_any_symlink(path p, uintmax_t max_loop, std::error_code& ec) NOEXCEPT
+{
+  auto result = std::move(p);
+
+  auto was_symlink = false;
+  for (auto i = 0u; i < max_loop; ++i) {
+    const auto filest = symlink_status(result, ec);
+    if (ec) {
+      return std::make_tuple(path{}, false);
+    }
+
+    if (filest.type() == file_type::not_found) {
+      ec = std::make_error_code(std::errc::no_such_file_or_directory);
+      return std::make_tuple(path{}, false);
+    }
+
+    if (is_symlink(filest)) {
+      was_symlink = true;
+
+      auto replacement = read_symlink(result, ec);
+      if (ec) {
+        return std::make_tuple(path{}, false);
+      }
+
+      if (replacement.is_absolute()) {
+        result = std::move(replacement);
+      }
+      else {
+        result = absolute(replacement, result.parent_path(), ec);
+        if (ec) {
+          return std::make_tuple(path{}, false);
+        }
+      }
+    }
+    else {
+      return std::make_tuple(result, was_symlink);
+    }
+  }
+
+  ec = std::make_error_code(std::errc::too_many_symbolic_link_levels);
+  return std::make_tuple(path{}, false);
+}
+
+}  // anon namespace
+
+
+path
+canonical(const path& p, const path& base, std::error_code& ec) NOEXCEPT
+{
+  using std::begin;
+  using std::end;
+  using std::next;
+
+  auto p1 = p.is_absolute() ? p : absolute(p, base, ec);
+  if (ec) {
+    return {};
+  }
+
+  auto result = path{};
+
+  const auto max_loop = symlink_loop_maximum();
+  bool is_done = false;
+  for (auto reparse_count = 0u; !is_done && reparse_count < max_loop; ++reparse_count) {
+    is_done = true;
+
+    auto it = begin(p1);
+    auto i_end = end(p1);
+    for (; it != i_end; ++it) {
+      if (it->native() == k_dotdot.native()) {
+        if (!result.has_filename()) {
+          ec = std::make_error_code(std::errc::no_such_file_or_directory);
+          return {};
+        }
+        result.remove_filename();
+      }
+      else if (it->native() == k_dot.native() && next(it) != i_end) {
+        // ignore
+      }
+      else {
+        auto new_result = path{};
+        auto was_symlink = false;
+        std::tie(new_result, was_symlink) = resolve_any_symlink(result / *it, max_loop, ec);
+        if (ec) {
+          return {};
+        }
+
+        if (!was_symlink) {
+          result = std::move(new_result);
+        }
+        else {
+          // every symlink replacement can insert arbitrary symlinks again; restart the
+          // canonicalization from this point by appending the rest of the current source
+          // to our found result and use that our new source.
+          auto new_p = std::move(new_result);
+          ++it; // skip the current element
+          for ( ; it != i_end; ++it) {
+            new_p /= *it;
+          }
+          p1 = std::move(new_p);
+          is_done = false;
+          result.clear();
+          break; // end the inner loop
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
 
 void
 copy(const path& from, const path& to)
@@ -859,6 +1051,19 @@ symlink_status(const path& p, std::error_code& ec) NOEXCEPT
 
 
 path
+system_complete(const path& p)
+{
+  std::error_code ec;
+  auto rv = system_complete(p, ec);
+  if (ec) {
+    throw filesystem_error("can't make complete path", p, ec);
+  }
+
+  return rv;
+}
+
+
+path
 temp_directory_path()
 {
   std::error_code ec;
@@ -896,6 +1101,77 @@ touch(const path& p, std::error_code& ec) NOEXCEPT
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     last_write_time(p, now, ec);
   }
+}
+
+
+path
+weakly_canonical(const path& p)
+{
+  std::error_code ec;
+  auto rv = weakly_canonical(p, ec);
+  if (ec) {
+    throw filesystem_error("failed to make a weakly_canonical", p, ec);
+  }
+  return rv;
+}
+
+
+path
+weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT
+{
+  using std::begin;
+  using std::end;
+  using std::next;
+
+  auto it = end(p);
+  auto i_end = end(p);
+
+  auto first = p;
+  while (!first.empty()) {
+    auto st = status(first, ec);
+    if (ec) {
+      return {};
+    }
+
+    if (st.type() != file_type::not_found) {
+      break;
+    }
+    --it;
+    first.remove_filename();
+  }
+
+  if (first.empty()) {
+    return p.lexically_normal();
+  }
+
+  auto canonical_first = canonical(first, ec);
+  if (ec) {
+    return {};
+  }
+  if (it == i_end) {
+    return canonical_first;
+  }
+
+  auto second = canonical_first;
+  // the canonical first part may end in a ".".  Removing that here avoids a full
+  // lexically_normal() run on the entire (canonical_first / second) path.
+  if (second.filename().native() == k_dot.native()) {
+    second.remove_filename();
+  }
+
+  for (; it != i_end; ++it) {
+    if (it->native() == k_dot.native() && next(it) != i_end) {
+      // ignore
+    }
+    else if (it->native() == k_dotdot.native() && second.has_filename()) {
+      second.remove_filename();
+    }
+    else {
+      second /= *it;
+    }
+  }
+
+  return second;
 }
 
 

@@ -2,6 +2,7 @@
 
 #include "memory_vfs.hpp"
 
+#include "common.hpp"
 #include "dir_iterator_private.hpp"
 #include "vfs_private.hpp"
 
@@ -27,15 +28,12 @@ namespace filesystem {
 namespace vfs {
 
 namespace {
-static std::string k_dot = std::string(".");
-static std::string k_dotdot = std::string("..");
-
 
 std::shared_ptr<FSNode>
 create_regular_file_node(const std::shared_ptr<FSNode>& parent, std::string name)
 {
   assert(parent->_type == file_type::directory);
-  assert(name != k_dot && name != k_dotdot);
+  assert(name != k_dot.string() && name != k_dotdot.string());
   parent->_children[name] = std::make_shared<FSNode>(file_type::regular);
   return parent->_children[name];
 }
@@ -45,7 +43,7 @@ std::shared_ptr<FSNode>
 create_directory_node(const std::shared_ptr<FSNode>& parent, std::string name)
 {
   assert(parent->_type == file_type::directory);
-  if (name != k_dot && name != k_dotdot) {
+  if (name != k_dot.string() && name != k_dotdot.string()) {
     parent->_children[name] = std::make_shared<FSNode>(file_type::directory);
     return parent->_children[name];
   }
@@ -111,10 +109,10 @@ find_node(const std::shared_ptr<FSNode>& base,
   while (i_path != i_pathend) {
     if (node->_type == file_type::directory) {
       auto nd_name = i_path->string();
-      if (nd_name == k_dot) {
+      if (nd_name == k_dot.string()) {
         ++i_path;
       }
-      else if (nd_name == k_dotdot) {
+      else if (nd_name == k_dotdot.string()) {
         if (!stack.empty()) {
           node = stack.back();
           stack.pop_back();
@@ -890,10 +888,10 @@ canonicalize_memory_vfs_path(const path& p, std::error_code& ec)
   path result;
 
   for (const auto& elt : p) {
-    if (elt.string() == k_dot) {
+    if (elt.native() == k_dot.native()) {
       // nop.  Leave this out
     }
-    else if (elt.string() == k_dotdot) {
+    else if (elt.native() == k_dotdot.native()) {
       auto len = std::distance(begin(result), end(result));
       if (len == 2 && result.has_root_name() && result.has_root_directory()) {
         ec.clear();

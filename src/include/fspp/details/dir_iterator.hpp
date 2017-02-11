@@ -73,6 +73,11 @@ public:
 
   void assign(const filesystem::path& p, file_size_type file_size);
 
+  /*! Changes the filename of the directory entry.
+   *
+   * This function does not commit any changes to the filesystem. */
+  void replace_filename(const filesystem::path& p);
+
   /*! Compares the path with the directory entry rhs. */
   friend bool operator==(const directory_entry& lhs, const directory_entry& rhs);
   friend bool operator!=(const directory_entry& lhs, const directory_entry& rhs);

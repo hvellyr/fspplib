@@ -108,6 +108,14 @@ directory_entry::assign(const filesystem::path& p, file_size_type file_size)
 }
 
 
+inline void
+directory_entry::replace_filename(const filesystem::path& p)
+{
+  _path = _path.parent_path() / p;
+  _file_size.reset();
+}
+
+
 inline bool
 operator==(const directory_entry& lhs, const directory_entry& rhs)
 {

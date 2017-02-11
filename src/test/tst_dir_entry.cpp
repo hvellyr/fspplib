@@ -37,6 +37,14 @@ TEST_CASE("directory_entry assign operators", "[dir-entry]")
 }
 
 
+TEST_CASE("directory_entry replace_filename", "[dir-entry]")
+{
+  auto d = directory_entry(u8path("foo/bar.txt"));
+  d.replace_filename("gaz.jpg");
+  REQUIRE(d.path() == u8path("foo/gaz.jpg"));
+}
+
+
 TEST_CASE("directory_entry assign", "[dir-entry]")
 {
   auto d = directory_entry(u8path("foo/bar.txt"));

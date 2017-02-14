@@ -15,11 +15,23 @@
 
 // TODO: define it properly in c++14
 #if defined(__clang__)
+
+#if !defined(CONSTEXPR)
 #define CONSTEXPR constexpr
+#endif
+#if !defined(NOEXCEPT)
 #define NOEXCEPT noexcept
+#endif
+
 #else
+
+#if !defined(CONSTEXPR)
 #define CONSTEXPR
+#endif
+#if !defined(NOEXCEPT)
 #define NOEXCEPT
+#endif
+
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)

@@ -77,4 +77,8 @@ target_include_directories(fspplib PUBLIC
 target_compile_options(fspplib
   PUBLIC ${cxx11_options} ${warning_options})
 
+install(TARGETS fspplib
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+
 add_subdirectory(test)

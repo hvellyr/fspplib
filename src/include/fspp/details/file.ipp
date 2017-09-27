@@ -23,6 +23,7 @@ public:
   virtual std::iostream& open(const path& path,
                               std::ios::openmode mode,
                               std::error_code& ec) = 0;
+  virtual std::iostream& stream() = 0;
   virtual bool is_open() const = 0;
   virtual void close(std::error_code& ec) = 0;
 };

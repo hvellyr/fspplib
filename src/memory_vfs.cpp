@@ -836,6 +836,12 @@ MemoryVfsFileImpl::open(const path& vpath, std::ios::openmode mode, std::error_c
 }
 
 
+std::iostream& MemoryVfsFileImpl::stream()
+{
+  return _stream;
+}
+
+
 bool
 MemoryVfsFileImpl::is_open() const
 {

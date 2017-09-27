@@ -141,6 +141,7 @@ public:
   std::iostream& open(const path& p,
                       std::ios::openmode mode,
                       std::error_code& ec) override;
+  std::iostream& stream() override;
   bool is_open() const override;
   void close(std::error_code& ec) override;
 };

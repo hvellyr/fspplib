@@ -52,6 +52,8 @@ public:
     return _stream;
   }
 
+  std::iostream& stream() override { return _stream; }
+
   bool is_open() const override { return _is_open; }
 
   void close(std::error_code& ec) override
@@ -142,6 +144,11 @@ File::open(std::ios::openmode mode)
   return stream;
 }
 
+
+std::iostream& File::stream()
+{
+  return _impl->stream();
+}
 
 bool
 File::is_open() const

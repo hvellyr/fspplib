@@ -21,12 +21,13 @@ class IFileImpl;
 
 /*! A representation to read from and write to real files
  *
- * While eyestep::filesystem::path represents the abstraction for a file or directory
- * pathname instances of this class are used to access the content of a file.
- * std::iostream%s are unluckily very restricted (they can't be copied or moved instance),
- * where this class comes in.  It implements a handle interface to an std::iostream, and
- * therefore can be copied and passed.  Reading and writing is done though always in terms
- * of the std::iostream system.
+ * While eyestep::filesystem::path represents the abstraction for a file or
+ * directory pathname instances of this class are used to access the content of
+ * a file.  std::iostream%s are unluckily very restricted (they can't be copied
+ * or moved for instance), where this class comes in.  It implements a handle
+ * interface to an std::iostream, and therefore can be copied and passed.
+ * Reading and writing is done though always in terms of the std::iostream
+ * system.
  *
  * @code
  * auto f = File("mfile.txt");
@@ -120,6 +121,12 @@ public:
    * If an error occurs sets @p ec accordingly.  If successfull @p ec is cleared.
    */
   std::iostream& open(std::ios::openmode mode, std::error_code& ec);
+
+  /*! Returns a reference to the underlying stream.
+   *
+   * Reading from or writing to the stream if is_valid() or is_open() returns
+   * false is undefined. */
+  std::iostream& stream();
 
   /*! Indicates whether the receiver (*this) is opened. */
   bool is_open() const;

@@ -80,5 +80,8 @@ target_compile_options(fspplib
 install(TARGETS fspplib
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
+install(DIRECTORY "include/" "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/include/>"
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.[hi]pp")
 
 add_subdirectory(test)

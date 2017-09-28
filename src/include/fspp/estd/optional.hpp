@@ -20,42 +20,85 @@ template <typename T>
 class optional
 {
 public:
-  optional() = default;
+  optional()
+    : _is_set(false)
+  {
+  }
+
   optional(T val)
-    : _value(std::move(val))
-    , _is_set(true)
+    : _is_set(true)
   {
+    new (&_value) T(std::move(val));
   }
 
-  optional(const optional<T>& rhs) = default;
+  optional(const optional<T>& rhs)
+    : _is_set(rhs._is_set)
+  {
+    if (rhs._is_set) {
+      new (&_value) T(rhs._value);
+    }
+  }
 
-#if defined(FSPP_IS_VS2013)
   optional(optional<T>&& rhs)
-    : _value(std::move(rhs._value))
-    , _is_set(rhs._is_set)
+    : _is_set(rhs._is_set)
   {
+    if (rhs._is_set) {
+      new (&_value) T(std::move(rhs._value));
+    }
   }
-#else
-  optional(optional<T>&&) = default;
-#endif
 
-  optional<T>& operator=(const optional<T>& rhs) = default;
-
-#if defined(FSPP_IS_VS2013)
-  optional<T>& operator=(optional<T>&& rhs)
+  optional<T>& operator=(const optional<T>& rhs)
   {
-    _value = std::move(rhs._value);
+    reset();
+
     _is_set = rhs._is_set;
+    if (rhs._is_set) {
+      new (&_value) T(rhs._value);
+    }
+
     return *this;
   }
-#else
-  optional<T>& operator=(optional<T>&&) = default;
-#endif
 
+  optional<T>& operator=(optional<T>&& rhs)
+  {
+    reset();
+
+    _is_set = rhs._is_set;
+    if (rhs._is_set) {
+      new (&_value) T(std::move(rhs._value));
+    }
+
+    return *this;
+  }
+
+  optional<T>& operator=(const T& val)
+  {
+    reset();
+    _is_set = true;
+    new (&_value) T(val);
+    return *this;
+  }
+
+  optional<T>& operator=(T&& val)
+  {
+    reset();
+    _is_set = true;
+    new (&_value) T(std::move(val));
+    return *this;
+  }
+
+  ~optional() { reset(); }
+
+  bool has_value() const { return _is_set; }
   explicit operator bool() const { return _is_set; }
 
   const T& value() const { return _value; }
   T& value() { return _value; }
+
+  const T* operator->() const { return &_value; }
+  T* operator->() { return &_value; }
+  const T& operator*() const { return _value; }
+  T& operator*() { return _value; }
 
   void reset()
   {
@@ -66,7 +109,11 @@ public:
   }
 
 private:
-  T _value;
+  union
+  {
+    bool _undefined;
+    T _value;
+  };
   bool _is_set = false;
 };
 

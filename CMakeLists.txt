@@ -65,9 +65,6 @@ set(CMAKE_MACOSX_RPATH ON)
 
 include(cmake/features.cmake)
 
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/src/include/fspp/details/config.hpp.in
-               ${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp)
-
 enable_testing()
 
 include(FeatureSummary)

@@ -1,5 +1,8 @@
 # Copyright (c) 2016 Gregor Klinke
 
+configure_file(${PROJECT_SOURCE_DIR}/src/include/fspp/details/config.hpp.in
+               ${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp)
+
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   add_definitions(-DDEBUG=1)
 else()
@@ -77,10 +80,14 @@ target_include_directories(fspplib PUBLIC
 target_compile_options(fspplib
   PUBLIC ${cxx11_options} ${warning_options})
 
+set_target_properties(fspplib PROPERTIES
+  PUBLIC_HEADER "${PROJECT_BINARY_DIR}/src/include/fspp/details/config.hpp")
+
 install(TARGETS fspplib
         LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib)
-install(DIRECTORY "include/" "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/include/>"
+        ARCHIVE DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/fspp/details/)
+install(DIRECTORY include/
         DESTINATION include
         FILES_MATCHING PATTERN "*.[hi]pp")
 

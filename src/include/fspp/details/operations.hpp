@@ -102,6 +102,39 @@ weakly_canonical(const path& p);
 FSPP_API path
 weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT;
 
+/*! Returns relative(p, current_path(), ec) */
+FSPP_API path
+relative(const path& p, std::error_code& ec) NOEXCEPT;
+/*! Returns @p p made relative to @p base.
+ *
+ *  Resolves symlinks and normalizes both @p p and @p base before other processing.
+ *  Effectively returns weakly_canonical(p).lexically_relative(weakly_canonical(base)) or
+ *  weakly_canonical(p, ec).lexically_relative(weakly_canonical(base, ec)). */
+FSPP_API path
+relative(const path& p, const path& base = current_path());
+/*! Returns @p p made relative to @p base.
+ *
+ *  Resolves symlinks and normalizes both @p p and @p base before other processing.
+ *  Effectively returns weakly_canonical(p).lexically_relative(weakly_canonical(base)) or
+ *  weakly_canonical(p, ec).lexically_relative(weakly_canonical(base, ec)), except it
+ *  returns path() at the first error occurrence, if any. */
+FSPP_API path
+relative(const path& p, const path& base, std::error_code& ec) NOEXCEPT;
+
+/*! Returns proximate(p, current_path(), ec) */
+FSPP_API path
+proximate(const path& p, std::error_code& ec) NOEXCEPT;
+
+/*! Effectively returns weakly_canonical(p).lexically_proximate(weakly_canonical(base)) or
+ *  weakly_canonical(p, ec).lexically_proximate(weakly_canonical(base, ec)). */
+FSPP_API path
+proximate(const path& p, const path& base = current_path());
+/*! Effectively returns weakly_canonical(p).lexically_proximate(weakly_canonical(base)) or
+ *  weakly_canonical(p, ec).lexically_proximate(weakly_canonical(base, ec)), except it
+ *  returns path() at the first error occurrence, if any. */
+FSPP_API path
+proximate(const path& p, const path& base, std::error_code& ec) NOEXCEPT;
+
 /*! Copies the file or directory @p from to file or directory @p to, using the copy
  * options indicated by @p options (defaults to copy_options::none for the versions not
  * taking it).

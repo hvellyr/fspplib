@@ -352,6 +352,7 @@ TEST_CASE("recursive dir iter - pop", "[dir-iter][recursive]")
                                    }));
   });
 }
+
 }  // namespace tests
 }  // namespace filesystem
 }  // namespace eyestep

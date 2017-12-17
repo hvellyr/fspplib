@@ -44,9 +44,13 @@
 - add a copy_if operation taking a predicate to decide whether a
   file/folder is to be copied
 
-- Can't we cache status() on directory_entry like file_size()?
+- Can't we cache status() on directory_entry like file_size()? ->
+  there's a new proposal for caching (and refreshing file_size and/or
+  status info on directory_entry).
 
 - support for OS9 vs. Unix path style on mac
+
+- handle (normalize) NFD vs NFC encoding of paths across OS.
 
 
 Follow up on proposed changes to the standard, esp:

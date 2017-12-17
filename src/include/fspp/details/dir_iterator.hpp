@@ -19,6 +19,7 @@
 namespace eyestep {
 namespace filesystem {
 
+/*! Represents a directory entry. The object stores a path as a member. */
 class FSPP_API directory_entry
 {
 public:
@@ -30,7 +31,7 @@ public:
   directory_entry(directory_entry&& other) = default;
 #endif
 
-  explicit directory_entry(const path& p);
+  explicit directory_entry(const filesystem::path& p);
 
   directory_entry& operator=(const directory_entry& other) = default;
 #if defined(FSPP_IS_VS2013)
@@ -71,6 +72,11 @@ public:
   void assign(const filesystem::path& p);
 
   void assign(const filesystem::path& p, file_size_type file_size);
+
+  /*! Changes the filename of the directory entry.
+   *
+   * This function does not commit any changes to the filesystem. */
+  void replace_filename(const filesystem::path& p);
 
   /*! Compares the path with the directory entry rhs. */
   friend bool operator==(const directory_entry& lhs, const directory_entry& rhs);

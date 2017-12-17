@@ -321,14 +321,6 @@ path::compare(const value_type* s) const
 
 
 inline path&
-path::remove_filename()
-{
-  *this = parent_path();
-  return *this;
-}
-
-
-inline path&
 path::replace_filename(const path& replacement)
 {
   *this = parent_path() / replacement;

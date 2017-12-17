@@ -657,6 +657,9 @@ TEST_CASE("filename", "[path][emulate-win]")
   check_it("foo/./", true, ".");
   check_it("foo/./bar", true, "bar");
   check_it("foo/../bar", true, "bar");
+  check_it("foo/bar.txt", true, "bar.txt");
+  check_it("foo/.bar", true, ".bar");
+  check_it("/", true, "/");
 }
 
 
@@ -786,7 +789,13 @@ TEST_CASE("remove_filename", "[path][emulate-win]")
   SECTION("returns the changed value")
   {
     REQUIRE(fs::path("/") == fs::path("/foo").remove_filename());
-    REQUIRE(fs::path() == fs::path("/").remove_filename());
+    REQUIRE(fs::path("/") == fs::path("/").remove_filename());
+    REQUIRE(fs::path("/") == fs::path("/.").remove_filename());
+    REQUIRE(fs::path("/") == fs::path("/..").remove_filename());
+    REQUIRE(fs::path("foo/") == fs::path("foo/").remove_filename());
+    REQUIRE(fs::path("foo/") == fs::path("foo/.").remove_filename());
+    REQUIRE(fs::path("foo/") == fs::path("foo/..").remove_filename());
+    REQUIRE(fs::path("foo/") == fs::path("foo/bar").remove_filename());
   }
 
   SECTION("is modifying the value")

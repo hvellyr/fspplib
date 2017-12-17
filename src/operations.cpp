@@ -171,7 +171,7 @@ canonical(const path& p, const path& base, std::error_code& ec) NOEXCEPT
           ec = std::make_error_code(std::errc::no_such_file_or_directory);
           return {};
         }
-        result.remove_filename();
+        result = result.parent_path();
       }
       else if (it->native() == k_dot.native() && next(it) != i_end) {
         // ignore
@@ -1218,7 +1218,7 @@ weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT
       break;
     }
     --it;
-    first.remove_filename();
+    first = first.parent_path();
   }
 
   if (first.empty()) {
@@ -1237,7 +1237,7 @@ weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT
   // the canonical first part may end in a ".".  Removing that here avoids a full
   // lexically_normal() run on the entire (canonical_first / second) path.
   if (second.filename().native() == k_dot.native()) {
-    second.remove_filename();
+    second = second.parent_path();
   }
 
   for (; it != i_end; ++it) {
@@ -1245,7 +1245,7 @@ weakly_canonical(const path& p, std::error_code& ec) NOEXCEPT
       // ignore
     }
     else if (it->native() == k_dotdot.native() && second.has_filename()) {
-      second.remove_filename();
+      second = second.parent_path();
     }
     else {
       second /= *it;

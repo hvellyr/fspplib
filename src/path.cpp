@@ -366,7 +366,8 @@ path::parent_path() const
 bool
 path::has_filename() const
 {
-  return !filename().empty();
+  const auto t = find_filename(*this);
+  return std::get<0>(t) != end() || !std::get<1>(t).empty();
 }
 
 

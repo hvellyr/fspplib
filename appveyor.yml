@@ -2,8 +2,6 @@ clone_depth: 5
 
 environment:
   matrix:
-    - CMAKE_GENERATOR: "Visual Studio 12 2013"
-      CONFIGURATION: Release
     - CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
       CONFIGURATION: Release
 

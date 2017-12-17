@@ -428,7 +428,7 @@ path::lexically_normal() const
 
   auto it = begin(*this);
   auto i_end = end(*this);
-  for ( ; it != i_end; ++it) {
+  for (; it != i_end; ++it) {
     if (it->native() == k_dot.native() && std::next(it) != i_end) {
       // nop.  Leave this out
     }

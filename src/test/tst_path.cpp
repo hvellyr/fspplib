@@ -452,7 +452,7 @@ TEST_CASE("root_name", "[path][emulate-win]")
     SECTION(p.string() + " root name")
     {
       REQUIRE(p.has_root_name() == expq);
-      REQUIRE(exp == p.root_name());
+      REQUIRE(p.root_name() == exp);
     }
   };
 
@@ -474,7 +474,7 @@ TEST_CASE("root_directory", "[path][emulate-win]")
     SECTION(p.string() + " root directory")
     {
       REQUIRE(p.has_root_directory() == expq);
-      REQUIRE(exp == p.root_directory());
+      REQUIRE(p.root_directory() == exp);
     }
   };
 
@@ -510,7 +510,7 @@ TEST_CASE("root_path", "[path][emulate-win]")
     SECTION(p.string() + " root_path")
     {
       REQUIRE(p.has_root_path() == expq);
-      REQUIRE(exp == p.root_path());
+      REQUIRE(p.root_path() == exp);
     }
   };
 
@@ -537,7 +537,7 @@ TEST_CASE("relative_path", "[path][emulate-win]")
     SECTION(p.string() + " relative path")
     {
       REQUIRE(p.has_relative_path() == expq);
-      REQUIRE(exp == p.relative_path());
+      REQUIRE(p.relative_path() == exp);
     }
   };
 
@@ -605,7 +605,7 @@ TEST_CASE("filename", "[path][emulate-win]")
     SECTION(p.string() + " filename")
     {
       REQUIRE(p.has_filename() == expq);
-      REQUIRE(exp == p.filename());
+      REQUIRE(p.filename() == exp);
     }
   };
 
@@ -669,7 +669,7 @@ TEST_CASE("parent_path", "[path][emulate-win]")
     SECTION(p.string() + " parent_path")
     {
       REQUIRE(p.has_parent_path() == expq);
-      REQUIRE(exp == p.parent_path());
+      REQUIRE(p.parent_path() == exp);
     }
   };
 
@@ -729,7 +729,7 @@ TEST_CASE("stem", "[path][emulate-win]")
     SECTION(p.string() + " stem")
     {
       REQUIRE(p.has_stem() == expq);
-      REQUIRE(exp == p.stem());
+      REQUIRE(p.stem() == exp);
     }
   };
 
@@ -752,7 +752,7 @@ TEST_CASE("extension", "[path][emulate-win]")
     SECTION(p.string() + " extension")
     {
       REQUIRE(p.has_extension() == expq);
-      REQUIRE(exp == p.extension());
+      REQUIRE(p.extension() == exp);
     }
   };
 

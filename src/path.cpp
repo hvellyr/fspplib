@@ -144,7 +144,7 @@ find_filename(const path& p) -> std::tuple<path::const_iterator, path>
   }
   else if (is_separator(p.native().back())) {
     if (!p.has_relative_path()) {
-      return make_tuple(end(p), p);
+      return make_tuple(end(p), p.root_directory());
     }
     else {
       return make_tuple(end(p), k_dot);

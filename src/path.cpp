@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <tuple>
 
 
 namespace eyestep {
@@ -132,6 +133,27 @@ find_root_directory(data_iterator i_begin, data_iterator i_end) -> data_iterator
   return i_end;
 }
 
+
+inline auto
+find_filename(const path& p) -> std::tuple<path::const_iterator, path>
+{
+  using namespace std;
+
+  if (p.empty()) {
+    return make_tuple(end(p), path());
+  }
+  else if (is_separator(p.native().back())) {
+    if (!p.has_relative_path()) {
+      return make_tuple(end(p), p.root_directory());
+    }
+    else {
+      return make_tuple(end(p), k_dot);
+    }
+  }
+  else {
+    return make_tuple(--end(p), *--end(p));
+  }
+}
 
 }  // anon namespace
 
@@ -344,14 +366,29 @@ path::parent_path() const
 bool
 path::has_filename() const
 {
-  return !filename().empty();
+  const auto t = find_filename(*this);
+  return std::get<0>(t) != end() || !std::get<1>(t).empty();
 }
 
 
 path
 path::filename() const
 {
-  return empty() ? path() : *--end();
+  const auto t = find_filename(*this);
+  return std::get<1>(t);
+}
+
+
+path&
+path::remove_filename()
+{
+  using std::begin;
+
+  const auto t = find_filename(*this);
+  if (std::get<0>(t) != end()) {
+    *this = path(begin(native()), std::get<0>(t)._it);
+  }
+  return *this;
 }
 
 
@@ -428,7 +465,7 @@ path::lexically_normal() const
 
   auto it = begin(*this);
   auto i_end = end(*this);
-  for ( ; it != i_end; ++it) {
+  for (; it != i_end; ++it) {
     if (it->native() == k_dot.native() && std::next(it) != i_end) {
       // nop.  Leave this out
     }

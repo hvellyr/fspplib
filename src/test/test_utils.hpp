@@ -1,5 +1,7 @@
 // Copyright (c) 2016 Gregor Klinke
 
+#pragma once
+
 #if defined(USE_FSPP_CONFIG_HPP)
 #include "fspp-config.hpp"
 #else

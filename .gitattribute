@@ -4,6 +4,8 @@
 *.mm                          text diff=cpp
 *.md                          text
 *.txt                         text
+*.in                          text diff=cpp
+*.in-meson                    text diff=cpp
 .clang-format                 text
 .gitignore                    text
 .gitattributes                text

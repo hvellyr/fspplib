@@ -1,0 +1,16 @@
+// Copyright (c) 2020 Gregor Klinke
+
+#pragma once
+
+#define FSPP_VERSION "@version@"
+
+#mesondefine FSPP_HAVE_STD_CODECVT
+#mesondefine FSPP_HAVE_STD_MAKE_UNIQUE
+#mesondefine FSPP_HAVE_STD_ENABLE_IF_T
+#mesondefine FSPP_HAVE_STD_OPTIONAL
+#mesondefine FSPP_HAVE_STD_STRINGSTREAM_COPYASSIGN
+#mesondefine FSPP_HAVE_STD_MISMATCH_WITH_PREDICATE
+
+#mesondefine OS_mac
+#mesondefine OS_linux
+#mesondefine OS_win

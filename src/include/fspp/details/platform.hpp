@@ -2,7 +2,11 @@
 
 #pragma once
 
-#include "fspp/details/config.hpp"
+#if defined(USE_FSPP_CONFIG_HPP)
+#include "fspp-config.hpp"
+#else
+#include "fspp/details/fspp-config.hpp"
+#endif
 
 #if defined(_WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #define FSPP_IS_WIN 1

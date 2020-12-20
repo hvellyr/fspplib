@@ -2,7 +2,11 @@
 
 #pragma once
 
-#include "fspp/details/config.hpp"
+#if defined(USE_FSPP_CONFIG_HPP)
+#include "fspp-config.hpp"
+#else
+#include "fspp/details/fspp-config.hpp"
+#endif
 
 #include "fspp/details/path.hpp"
 #include "fspp/details/vfs.hpp"

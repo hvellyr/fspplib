@@ -29,7 +29,7 @@ public:
   {
   }
 
-  ~WinDirIterImpl() { close_handle(); }
+  ~WinDirIterImpl() override { close_handle(); }
 
   void close_handle()
   {

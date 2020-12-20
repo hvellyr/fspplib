@@ -25,7 +25,7 @@ public:
   {
   }
 
-  ~PosixDirIterImpl()
+  ~PosixDirIterImpl() override
   {
     if (_dirp) {
       ::closedir(_dirp);

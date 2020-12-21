@@ -6,7 +6,7 @@
 configure_file(input : 'include/fspp/details/config.hpp.in-meson',
                output : 'fspp-config.hpp',
                configuration : conf_data,
-               install : true,
+               install : not meson.is_subproject(),
                install_dir : 'include/fspp/details')
 
 fspp_inc = include_directories('.', 'include')
@@ -51,12 +51,14 @@ fspp_lib = static_library('fspplib',
                           fspp_sources,
                           include_directories : [fspp_inc],
                           cpp_args : fspp_args,
-                          install : true)
+                          install : not meson.is_subproject())
 
-install_subdir('include',
-               install_dir : '',
-               strip_directory : false,
-               exclude_files : ['fspp/details/config.hpp.in',
-                                'fspp/details/config.hpp.in-meson'])
+if not meson.is_subproject()
+  install_subdir('include',
+                 install_dir : '',
+                 strip_directory : false,
+                 exclude_files : ['fspp/details/config.hpp.in',
+                                  'fspp/details/config.hpp.in-meson'])
+endif
 
 subdir('test')

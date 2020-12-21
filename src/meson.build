@@ -53,6 +53,12 @@ fspp_lib = static_library('fspplib',
                           cpp_args : fspp_args,
                           install : not meson.is_subproject())
 
+fspp_dep = declare_dependency(
+  include_directories : fspp_inc,
+  compile_args : fspp_args,
+  link_with : fspp_lib)
+
+
 if not meson.is_subproject()
   install_subdir('include',
                  install_dir : '',
@@ -62,9 +68,3 @@ if not meson.is_subproject()
 endif
 
 subdir('test')
-
-
-fspp_dep = declare_dependency(
-  include_directories : fspp_inc,
-  compile_args : fspp_args,
-  link_with : fspp_lib)

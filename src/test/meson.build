@@ -16,9 +16,8 @@ fspptests_sources = [
 
 fspptests = executable('fspptests',
                        fspptests_sources,
-                       include_directories : [catch_inc, fspp_inc],
-                       cpp_args : fspp_args,
-                       link_with: fspp_lib,
+                       include_directories : [catch_inc],
+                       dependencies : [fspp_dep],
                        install : false)
 
 test('tests', fspptests)

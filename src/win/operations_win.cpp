@@ -605,7 +605,7 @@ remove_all(const path& p, std::error_code& ec) NOEXCEPT
     return count;
   }
 
-  for (; iter != end(iter); ++iter) {
+  for (; !ec && iter != end(iter); iter.increment(ec)) {
     auto& e = *iter;
 
     DWORD attr;
@@ -627,6 +627,9 @@ remove_all(const path& p, std::error_code& ec) NOEXCEPT
       }
       ++count;
     }
+  }
+  if (ec) {
+    return count;
   }
 
   impl::remove(p, ec);

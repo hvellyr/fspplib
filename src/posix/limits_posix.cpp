@@ -4,7 +4,6 @@
 
 #include <limits.h>
 #include <unistd.h>
-#include <iostream>
 
 
 namespace eyestep {

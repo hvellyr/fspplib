@@ -19,12 +19,12 @@ namespace filesystem {
 path
 temp_directory_path(std::error_code& ec) NOEXCEPT
 {
+  ec.clear();
+
   if (auto value = ::getenv("TMPDIR")) {
-    ec.clear();
     return u8path(value);
   }
 
-  ec.clear();
   return u8path("/tmp");
 }
 

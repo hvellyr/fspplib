@@ -368,11 +368,9 @@ remove(const path& p, std::error_code& ec) NOEXCEPT
       return false;
     }
   }
-  else {
-    if (::unlink(p.c_str())) {
-      ec = std::error_code(errno, std::generic_category());
-      return false;
-    }
+  else if (::unlink(p.c_str())) {
+    ec = std::error_code(errno, std::generic_category());
+    return false;
   }
 
   ec.clear();
@@ -421,107 +419,48 @@ permissions(const path& p, perms prms, std::error_code& ec) NOEXCEPT
 }
 
 
-namespace {
-void
-remove_dir_rec(const path& p, std::uintmax_t& count, std::error_code& ec)
-{
-  const auto check_dirent_is_dir = [](
-    const path& subp, struct dirent* dp, std::error_code& ec1) {
-    if (dp->d_type == DT_UNKNOWN) {
-      // the filesystem doesn't support reporting the filetype via
-      // dirent.  Use ::lstat() as a fallback.
-      struct stat buf;
-      if (::lstat(subp.c_str(), &buf) < 0) {
-        ec1 = std::error_code(errno, std::generic_category());
-        return false;
-      }
-
-      ec1.clear();
-      return S_ISDIR(buf.st_mode);
-    }
-    else if (dp->d_type == DT_DIR) {
-      ec1.clear();
-      return true;
-    }
-    else {
-      ec1.clear();
-      return false;
-    }
-  };
-
-  DIR* dirp = ::opendir(p.c_str());
-  if (dirp) {
-    struct dirent* direntp = nullptr;
-
-    do {
-      struct dirent f;
-
-      if (::readdir_r(dirp, &f, &direntp)) {
-        ec = std::error_code(errno, std::generic_category());
-        return;
-      }
-
-      if (direntp) {
-        if (::strcmp(direntp->d_name, "..") == 0 || ::strcmp(direntp->d_name, ".") == 0) {
-          continue;
-        }
-
-        const auto subpath = p / direntp->d_name;
-        if (check_dirent_is_dir(subpath, direntp, ec)) {
-          remove_dir_rec(subpath, count, ec);
-          if (ec) {
-            return;
-          }
-        }
-        else {
-          if (ec) {
-            return;
-          }
-          if (::unlink(subpath.c_str())) {
-            ec = std::error_code(errno, std::generic_category());
-            return;
-          }
-          ++count;
-        }
-      }
-    } while (direntp);
-
-    if (::closedir(dirp) < 0) {
-      ec = std::error_code(errno, std::generic_category());
-      return;
-    }
-
-    if (::rmdir(p.c_str())) {
-      ec = std::error_code(errno, std::generic_category());
-      return;
-    }
-    ++count;
-  }
-  else {
-    ec = std::error_code(errno, std::generic_category());
-    return;
-  }
-}
-
-}  // anon namespace
-
-
 std::uintmax_t
 remove_all(const path& p, std::error_code& ec) NOEXCEPT
 {
+  using std::end;
+
   std::uintmax_t count = 0;
-
-  std::error_code ecp;
-  remove_dir_rec(p, count, ecp);
-
-  if (ecp) {
-    ec = ecp;
-    return static_cast<std::uintmax_t>(-1);
-  }
-  else {
-    ec.clear();
+  auto iter = directory_iterator(p, ec);
+  if (ec) {
     return count;
   }
+
+  for (; !ec && iter != end(iter); iter.increment(ec)) {
+    auto& e = *iter;
+
+    auto ty = impl::symlink_status(e.path(), ec);
+    if (ec) {
+      return count;
+    }
+
+    if (is_directory(ty)) {
+      count += impl::remove_all(e.path(), ec);
+      if (ec) {
+        return count;
+      }
+    }
+    else {
+      impl::remove(e.path(), ec);
+      if (ec) {
+        return count;
+      }
+      ++count;
+    }
+  }
+
+  impl::remove(p, ec);
+  if (ec) {
+    return count;
+  }
+
+  ec.clear();
+  ++count;
+  return count;
 }
 
 

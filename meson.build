@@ -134,6 +134,37 @@ int main() {
   conf_data.set('FSPP_HAVE_STD_MISMATCH_WITH_PREDICATE', 1)
 endif
 
+# (modern) glibc implementations deprecated readdir_r for a good reason.  If you could pass 'werror: true' (or something similar) to cc.compiles(), we could test this here.  But, alas, though that wish was listed, it's not yet available in 0.56.  So we have to hardcode this here:
+if host_machine.system() == 'linux'
+  conf_data.set('FSPP_USE_READDIR_R', false)
+else
+  conf_data.set('FSPP_USE_READDIR_R', true)
+endif
+# if cc.compiles('''#include <dirent.h>
+# int main()
+# {
+#   DIR* dirp = opendir(".");
+
+#   struct dirent* direntp = nullptr;
+#   struct dirent f;
+#   if (::readdir_r(dirp, &f, &direntp)) {
+#     return 0;
+#   }
+#   return 1;
+# }
+# ''',
+#                werror: true,
+#                name : 'POSIX readdir_r should be used')
+#   conf_data.set('FSPP_USE_READDIR_R', 1)
+# endif
+
+conf_data.set('FSPP_HAVE_FPATHCONF', cc.has_function('fpathconf',
+                                                     prefix : '#include<unistd.h>'))
+conf_data.set('FSPP_HAVE_DIRFD', cc.has_function('dirfd',
+                                                 prefix : '''
+#include<sys/types.h>
+#include<dirent.h>
+'''))
 
 # ------------------------------------------------------------------------------
 

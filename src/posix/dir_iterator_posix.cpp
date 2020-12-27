@@ -16,29 +16,83 @@ namespace eyestep {
 namespace filesystem {
 
 namespace {
+#if defined(FSPP_USE_READDIR_R)
+size_t dirent_buf_size(DIR* dirp, std::error_code& ec)
+{
+  long name_max;
+#if defined(FSPP_HAVE_FPATHCONF) && defined(FSPP_HAVE_DIRFD)   \
+    && defined(_PC_NAME_MAX)
+  name_max = fpathconf(dirfd(dirp), _PC_NAME_MAX);
+  if (name_max == -1)
+#  if defined(NAME_MAX)
+    name_max = (NAME_MAX > 255) ? NAME_MAX : 255;
+#  else
+  ec = std::make_error_code(std::errc::not_supported);
+  return (size_t)(-1);
+# endif
+# elif defined(NAME_MAX)
+  name_max = (NAME_MAX > 255) ? NAME_MAX : 255;
+# else
+#   error "buffer size for readdir_r cannot be determined"
+# endif
+
+  ec.clear();
+  auto name_end = (size_t)offsetof(struct dirent, d_name) + name_max + 1;
+  return name_end > sizeof(struct dirent)
+    ? name_end
+    : sizeof(struct dirent);
+}
+#endif
+
+
 class PosixDirIterImpl : public directory_iterator::IDirIterImpl
 {
 public:
+#if defined(FSPP_USE_READDIR_R)
+  PosixDirIterImpl(DIR* dirp, path p, size_t dirent_size = 0)
+    : _dirp(dirp)
+    , _path(std::move(p))
+    , _dirent_size(dirent_size)
+  {
+  }
+#else
   PosixDirIterImpl(DIR* dirp, path p)
     : _dirp(dirp)
     , _path(std::move(p))
   {
   }
+#endif
+
+  void close_dir()
+  {
+#if defined(FSPP_USE_READDIR_R)
+    if (_dirent) {
+      ::free(_dirent);
+      _dirent = nullptr;
+    }
+#endif
+    if (_dirp) {
+      ::closedir(_dirp);
+      _dirp = nullptr;
+    }
+  }
 
   ~PosixDirIterImpl() override
   {
-    if (_dirp) {
-      ::closedir(_dirp);
-    }
+    close_dir();
   }
 
   void increment(std::error_code& ec) override
   {
+#if defined(FSPP_USE_READDIR_R)
     struct dirent* direntp = nullptr;
-    struct dirent f;
+
+    if (!_dirent) {
+      _dirent = reinterpret_cast<struct dirent *>(::malloc(_dirent_size));
+    }
 
     do {
-      if (::readdir_r(_dirp, &f, &direntp)) {
+      if (::readdir_r(_dirp, _dirent, &direntp)) {
         ec = std::error_code(errno, std::generic_category());
         return;
       }
@@ -53,10 +107,29 @@ public:
         return;
       }
     } while (direntp);
+#else
+    struct dirent* direntp = nullptr;
 
-    ::closedir(_dirp);
-    _dirp = nullptr;
+    do {
+      errno = 0;
+      direntp = ::readdir(_dirp);
+      if (direntp) {
+        if (::strcmp(direntp->d_name, "..") == 0 || ::strcmp(direntp->d_name, ".") == 0) {
+          continue;
+        }
 
+        _current.assign(_path / direntp->d_name);
+        ec.clear();
+        return;
+      }
+      else if (errno != 0) {
+        ec = std::error_code(errno, std::generic_category());
+        return;
+      }
+    } while (direntp);
+#endif
+
+    close_dir();
     ec.clear();
   }
 
@@ -82,6 +155,10 @@ public:
 private:
   DIR* _dirp = nullptr;
   path _path;
+#if defined(FSPP_USE_READDIR_R)
+  struct dirent* _dirent = nullptr;
+  size_t _dirent_size = 0;
+#endif
   directory_entry _current;
 };
 
@@ -97,7 +174,16 @@ impl::make_dir_iterator(const path& p, std::error_code& ec)
     return nullptr;
   }
 
+#if defined(FSPP_USE_READDIR_R)
+  const auto dirent_size = dirent_buf_size(dirp, ec);
+  if (ec) {
+    return {};
+  }
+  auto impl = estd::make_unique<PosixDirIterImpl>(dirp, p, dirent_size);
+#else
   auto impl = estd::make_unique<PosixDirIterImpl>(dirp, p);
+#endif
+
   impl->increment(ec);
   if (ec || impl->is_end()) {
     return {};

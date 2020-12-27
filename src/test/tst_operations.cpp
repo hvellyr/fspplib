@@ -207,7 +207,7 @@ TEST_CASE("copy_file to existing file - none", "[operations][emulate-win]")
       root / "bar.txt", [](std::ostream& os) { os << "annyeong sesang\n"; });
 
     REQUIRE_THROWS_AS(
-      { copy_file(root / "foo.txt", root / "bar.txt"); }, filesystem_error);
+      { copy_file(root / "foo.txt", root / "bar.txt"); }, const filesystem_error&);
   });
 }
 
@@ -274,7 +274,7 @@ TEST_CASE("copy_file - fails if target is dir", "[operations][emulate-win]")
     create_directory(root / "bar.txt");
 
     REQUIRE_THROWS_AS(
-      { copy_file(root / "foo.txt", root / "bar.txt"); }, filesystem_error);
+      { copy_file(root / "foo.txt", root / "bar.txt"); }, const filesystem_error&);
 
     REQUIRE(is_directory(root / "bar.txt"));
   });
@@ -327,7 +327,7 @@ TEST_CASE("copy_symlink - to file", "[operations]")
       REQUIRE(read_symlink(root / "zap.txt") == "../foo.txt");
 
 #if !defined(FSPP_IS_WIN)
-      REQUIRE_THROWS_AS({ read_file(root / "zap.txt"); }, filesystem_error);
+      REQUIRE_THROWS_AS({ read_file(root / "zap.txt"); }, const filesystem_error&);
 #endif
     });
   });

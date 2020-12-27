@@ -357,7 +357,7 @@ bool
 remove(const path& p, std::error_code& ec) NOEXCEPT
 {
   struct stat buf;
-  if (::stat(p.c_str(), &buf)) {
+  if (::lstat(p.c_str(), &buf)) {
     ec = std::error_code(errno, std::generic_category());
     return false;
   }

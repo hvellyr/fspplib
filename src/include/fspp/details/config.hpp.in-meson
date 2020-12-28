@@ -10,6 +10,9 @@
 #mesondefine FSPP_HAVE_STD_OPTIONAL
 #mesondefine FSPP_HAVE_STD_STRINGSTREAM_COPYASSIGN
 #mesondefine FSPP_HAVE_STD_MISMATCH_WITH_PREDICATE
+#mesondefine FSPP_HAVE_FPATHCONF
+#mesondefine FSPP_HAVE_DIRFD
+#mesondefine FSPP_USE_READDIR_R
 
 #mesondefine OS_mac
 #mesondefine OS_linux
